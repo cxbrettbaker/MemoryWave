@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: e3c5893b5f9081f469f34a270211fce6
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - gameButtonPrefab: {fileID: 550762898010842864, guid: 6a7d87c186fca5b4b9a9d41010f5de0e,
+      type: 3}
+  - gameFieldPanelTransform: {instanceID: 0}
+  - redButton: {instanceID: 0}
+  - blueButton: {instanceID: 0}
+  - yellowButton: {instanceID: 0}
+  - greenButton: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
