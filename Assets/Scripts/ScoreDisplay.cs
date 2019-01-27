@@ -17,8 +17,7 @@ public class ScoreDisplay : MonoBehaviour
     void Start()
     {
         Score.GetComponent<TextMeshProUGUI>().text = "Score:" + GameManager.instance.score.ToString();
-        Accuracy.GetComponent<TextMeshProUGUI>().text = "Accuracy" + 
-            ((GameManager.instance.numNormalHit + GameManager.instance.numGoodHit) / GameManager.instance.hitObjectsList.Count).ToString();
+        Accuracy.GetComponent<TextMeshProUGUI>().text = "Accuracy: WIP";
         NormalHits.GetComponent<TextMeshProUGUI>().text = "Normal Hits: " + GameManager.instance.numNormalHit.ToString();
         GoodHits.GetComponent<TextMeshProUGUI>().text = "Good Hits: " + GameManager.instance.numGoodHit.ToString();
     }

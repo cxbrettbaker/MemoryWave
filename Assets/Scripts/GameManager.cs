@@ -274,16 +274,16 @@ public class GameManager : MonoBehaviour
         switch(color)
         {
             case "red":
-                simonSaysController.GetComponent<simonSaysManager>().StoreBleep(0, isBlack);
+                simonSaysController.GetComponent<MemoryManager>().StoreBleep(0, isBlack);
                 break;
             case "blue":
-                simonSaysController.GetComponent<simonSaysManager>().StoreBleep(1, isBlack);
+                simonSaysController.GetComponent<MemoryManager>().StoreBleep(1, isBlack);
                 break;
             case "yellow":
-                simonSaysController.GetComponent<simonSaysManager>().StoreBleep(2, isBlack);
+                simonSaysController.GetComponent<MemoryManager>().StoreBleep(2, isBlack);
                 break;
             case "green":
-                simonSaysController.GetComponent<simonSaysManager>().StoreBleep(3, isBlack);
+                simonSaysController.GetComponent<MemoryManager>().StoreBleep(3, isBlack);
                 break;
         }
     }

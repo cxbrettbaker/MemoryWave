@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class simonSaysManager : MonoBehaviour
+public class MemoryManager : MonoBehaviour
 {
  
 
@@ -85,13 +85,13 @@ public class simonSaysManager : MonoBehaviour
         }
         else
         {
-            LeanTween.value(gameButtons[index], buttonSettings[4].normalColor, buttonSettings[4].highlightColor, 0.25f)
+            LeanTween.value(gameButtons[index], buttonSettings[index].normalColor, buttonSettings[4].highlightColor, 0.25f)
                 .setOnUpdate((Color color) =>
                 {
                     gameButtons[index].GetComponent<Image>().color = color;
                 });
 
-            LeanTween.value(gameButtons[index], buttonSettings[index].highlightColor, buttonSettings[index].normalColor, 0.25f)
+            LeanTween.value(gameButtons[index], buttonSettings[4].highlightColor, buttonSettings[index].normalColor, 0.25f)
                 .setDelay(0.5f)
                 .setOnUpdate((Color color) =>
                 {
@@ -108,16 +108,6 @@ public class simonSaysManager : MonoBehaviour
 		Bleep(index, isBlack);
 		bleeps.Add(index);
 		bleepCount++;
-    }
-	
-    public void enableInput()
-    {
-        inputEnabled = true;
-    }
-
-    public void disableInput()
-    {
-        inputEnabled = false;
     }
 
 
