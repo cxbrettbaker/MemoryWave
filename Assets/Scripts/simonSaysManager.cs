@@ -43,7 +43,6 @@ public class simonSaysManager : MonoBehaviour
 	
 	// actually create the buttons 
 	void ButtonSetter(int index, GameObject gameButton) {
-        Debug.Log("COLOR: " + buttonSettings[index].normalColor);
 		gameButton.GetComponent<Image>().color = buttonSettings[index].normalColor;
 		gameButtons.Add(gameButton);
     }
