@@ -9,6 +9,7 @@ public class HitObject
     private int x;
     private int y;
     private int offset;
+    private int endOffset;
 
     private bool isNote; //true for note
     private bool isMine;
@@ -46,6 +47,11 @@ public class HitObject
     public int getOffset()
     {
         return offset;
+    }
+
+    public int getEndOffset()
+    {
+        return endOffset;
     }
 
     public bool IsNote()
@@ -108,6 +114,11 @@ public class HitObject
         offset = Convert.ToInt32(input);
     }
 
+    public void setEndOffset(string input)
+    {
+        endOffset = Convert.ToInt32(input);
+    }
+
     private bool readBit(int num, int index)
     {
         return (num & (1 << index)) != 0;
@@ -139,7 +150,7 @@ public class HitObject
 
     public void setIsHold(string input)
     {
-        flashBlack = readBit(Convert.ToInt32(input), 6);
+        isHold = readBit(Convert.ToInt32(input), 7);
     }
 
 

@@ -1421,6 +1421,7 @@ MonoBehaviour:
     type: 3}
   parentObject: {fileID: 574158384}
   hitbox: {fileID: 1004766279}
+  midHold: {fileID: 4777761480699856992, guid: bd12b9549f4995b4f9ae49ccb4e67285, type: 3}
 --- !u!4 &1047737264
 Transform:
   m_ObjectHideFlags: 0

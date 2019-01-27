@@ -43,10 +43,10 @@ public class simonSaysManager : MonoBehaviour
 	
 	// actually create the buttons 
 	void ButtonSetter(int index, GameObject gameButton) {
+        Debug.Log("COLOR: " + buttonSettings[index].normalColor);
 		gameButton.GetComponent<Image>().color = buttonSettings[index].normalColor;
 		gameButtons.Add(gameButton);
     }
-	
 
 	
 	// Play the audio upon button press
@@ -68,64 +68,48 @@ public class simonSaysManager : MonoBehaviour
 	
 	
 	// Call to show a BLEEP. 
-	public void Bleep (int index) {
-		LeanTween.value(gameButtons[index], buttonSettings[index].normalColor, buttonSettings[index].highlightColor, 0.25f).setOnUpdate((Color color) => {
-			gameButtons[index].GetComponent<Image>().color = color;
-		});
+	public void Bleep (int index, bool isBlack) {
+        if (!isBlack)
+        {
+            LeanTween.value(gameButtons[index], buttonSettings[index].normalColor, buttonSettings[index].highlightColor, 0.25f)
+                .setOnUpdate((Color color) =>
+                {
+                    gameButtons[index].GetComponent<Image>().color = color;
+                });
 
-        LeanTween.value(gameButtons[index], buttonSettings[index].highlightColor, buttonSettings[index].normalColor, 0.25f)
-            .setDelay(0.5f)
-            .setOnUpdate((Color color) => {
-                gameButtons[index].GetComponent<Image>().color = color;
-            });
+            LeanTween.value(gameButtons[index], buttonSettings[index].highlightColor, buttonSettings[index].normalColor, 0.25f)
+                .setDelay(0.5f)
+                .setOnUpdate((Color color) =>
+                {
+                    gameButtons[index].GetComponent<Image>().color = color;
+                });
+        }
+        else
+        {
+            LeanTween.value(gameButtons[index], buttonSettings[4].normalColor, buttonSettings[4].highlightColor, 0.25f)
+                .setOnUpdate((Color color) =>
+                {
+                    gameButtons[index].GetComponent<Image>().color = color;
+                });
+
+            LeanTween.value(gameButtons[index], buttonSettings[index].highlightColor, buttonSettings[index].normalColor, 0.25f)
+                .setDelay(0.5f)
+                .setOnUpdate((Color color) =>
+                {
+                    gameButtons[index].GetComponent<Image>().color = color;
+                });
+        }
 
         PlayAudio(index);
-	
+        
 	}
 	
 	// Store the given color into the list of bleeps to be pressed. 
-	public void StoreBleep(int index) {
-		Bleep(index);
+	public void StoreBleep(int index, bool isBlack) {
+		Bleep(index, isBlack);
 		bleeps.Add(index);
 		bleepCount++;
     }
-	
-	
-	// Press the given button. 
-	public void MemoryInput(int index) {
-		
-		Bleep(index);
-		playerBleeps.Add(index);
-		
-		if(bleeps[playerBleeps.Count - 1] != index) {
-			Missed();
-			return;
-		}
-
-		if(bleeps.Count == playerBleeps.Count) {
-			Success();
-		}
-	}
-	
-	void Update() {
-        if(!inputEnabled)
-        {
-            return;
-        }
-		if (Input.GetKeyDown(KeyCode.UpArrow)) {
-			MemoryInput(0);
-		}
-		else if (Input.GetKeyDown(KeyCode.RightArrow)) {
-			MemoryInput(1);
-		}
-		else if (Input.GetKeyDown(KeyCode.DownArrow)) {
-			MemoryInput(3);
-		}
-		else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-			MemoryInput(2);
-		}
-
-	}
 	
     public void enableInput()
     {

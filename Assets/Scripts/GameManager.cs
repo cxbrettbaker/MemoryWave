@@ -58,6 +58,7 @@ public class GameManager : MonoBehaviour
     public GameObject rightSmallMine;
     public GameObject parentObject;
     public GameObject hitbox;
+    public GameObject midHold;
 
     void loadLevel()
     {
@@ -114,6 +115,7 @@ public class GameManager : MonoBehaviour
                 hitObjects.setColour(tmp[3]);
                 hitObjects.setFlashBlack(tmp[3]);
                 hitObjects.setIsHold(tmp[3]);
+                hitObjects.setEndOffset(tmp[4]);
                 hitObjectsList.Add(hitObjects);
             }
 
@@ -206,7 +208,7 @@ public class GameManager : MonoBehaviour
 
             if (noteOffsetTime >= hitObject.getOffset()) {
                 //Debug.Log("Note " + hitObject.getOffset() + " Spawn time: " + offsetTime + "\nNote offset: " + noteOffsetTime);
-                if (hitObject.IsNote() && !noteFlag)
+                if ((hitObject.IsNote() || hitObject.IsHold()) && !noteFlag)
                 {
                     //Debug.Log("Spawning note " + hitObject.getOffset() + " to be hit at: " + noteOffsetTime);
                     //Debug.Log("noteStartTime: " + noteStartTime);
@@ -253,16 +255,16 @@ public class GameManager : MonoBehaviour
         switch(color)
         {
             case "red":
-                simonSaysController.GetComponent<simonSaysManager>().StoreBleep(0);
+                simonSaysController.GetComponent<simonSaysManager>().StoreBleep(0, isBlack);
                 break;
             case "blue":
-                simonSaysController.GetComponent<simonSaysManager>().StoreBleep(1);
+                simonSaysController.GetComponent<simonSaysManager>().StoreBleep(1, isBlack);
                 break;
             case "yellow":
-                simonSaysController.GetComponent<simonSaysManager>().StoreBleep(2);
+                simonSaysController.GetComponent<simonSaysManager>().StoreBleep(2, isBlack);
                 break;
             case "green":
-                simonSaysController.GetComponent<simonSaysManager>().StoreBleep(3);
+                simonSaysController.GetComponent<simonSaysManager>().StoreBleep(3, isBlack);
                 break;
         }
     }
@@ -371,6 +373,77 @@ public class GameManager : MonoBehaviour
         currentRing.tag = "rings";
     }
 
+    void spawnLeftBigHold(HitObject hitObject)
+    {
+        int offsetDiff = hitObject.getEndOffset() - hitObject.getOffset();
+        var currentRing = Instantiate(leftBigRing, leftSpawnerBig.position, leftSpawnerBig.rotation);
+        var midRing = Instantiate(midHold, leftSpawnerBig.position, leftSpawnerBig.rotation);
+        var endRing = Instantiate(leftBigRing, leftSpawnerBig.position + new Vector3(0,30,0), leftSpawnerBig.rotation);
+        currentRing.transform.SetParent(parentObject.transform);
+        currentRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
+        currentRing.AddComponent<Ring>();
+        currentRing.GetComponent<Ring>().spawnerPos = leftSpawnerBig.position;
+        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
+        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
+        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.tag = "rings";
+        midRing.transform.SetParent(parentObject.transform);
+        midRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
+        midRing.AddComponent<Ring>();
+        midRing.GetComponent<Ring>().spawnerPos = leftSpawnerBig.position;
+        midRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
+        midRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
+        midRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        midRing.tag = "hold";
+        endRing.transform.SetParent(parentObject.transform);
+        endRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
+        endRing.AddComponent<Ring>();
+        endRing.GetComponent<Ring>().spawnerPos = leftSpawnerBig.position;
+        endRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
+        endRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
+        endRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        endRing.tag = "end";
+    }
+
+    void spawnLeftSmallHold(HitObject hitObject)
+    {
+        var currentRing = Instantiate(leftSmallMine, leftSpawnerSmall.position, leftSpawnerSmall.rotation);
+        currentRing.transform.SetParent(parentObject.transform);
+        currentRing.transform.localScale = new Vector3(1.0f, 0.85f, 0);
+        currentRing.AddComponent<Ring>();
+        currentRing.GetComponent<Ring>().spawnerPos = leftSpawnerSmall.position;
+        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
+        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
+        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.tag = "rings";
+    }
+
+    void spawnRightBigHold(HitObject hitObject)
+    {
+        var currentRing = Instantiate(rightBigMine, rightSpawnerBig.position, rightSpawnerBig.rotation);
+        currentRing.transform.SetParent(parentObject.transform);
+        currentRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
+        currentRing.AddComponent<Ring>();
+        currentRing.GetComponent<Ring>().spawnerPos = rightSpawnerBig.position;
+        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
+        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
+        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.tag = "rings";
+    }
+
+    void spawnRightSmallHold(HitObject hitObject)
+    {
+        var currentRing = Instantiate(rightSmallMine, rightSpawnerSmall.position, rightSpawnerSmall.rotation);
+        currentRing.transform.SetParent(parentObject.transform);
+        currentRing.transform.localScale = new Vector3(1.0f, 0.85f, 0);
+        currentRing.AddComponent<Ring>();
+        currentRing.GetComponent<Ring>().spawnerPos = rightSpawnerSmall.position;
+        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
+        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
+        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.tag = "rings";
+    }
+
     public void spawnNotes(HitObject hitObject)
     {
         if (hitObject.getX() == 64)
@@ -378,6 +451,10 @@ public class GameManager : MonoBehaviour
             if (hitObject.IsMine())
             {
                 spawnLeftBigMine(hitObject);
+            }
+            else if(hitObject.IsHold())
+            {
+                spawnLeftBigHold(hitObject);
             }
             else
             {

@@ -9,6 +9,9 @@ TagManager:
   - normalHitbox
   - goodHitBox
   - goodHitbox
+  - despawner
+  - hold
+  - end
   layers:
   - Default
   - TransparentFX
