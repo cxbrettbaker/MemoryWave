@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CatController : MonoBehaviour
+public class LeftCatController : MonoBehaviour
 {
     private Image image;
     public Sprite handsUpSprite;
@@ -27,6 +27,8 @@ public class CatController : MonoBehaviour
 		bongoSounds = GetComponents<AudioSource>();
         leftHandKeyPressed = false;
         rightHandKeyPressed = false;
+        leftHandKey = FindObjectOfType<GameManager>().keyLeft;
+        rightHandKey = FindObjectOfType<GameManager>().keyDown;
     }
 
     // Update is called once per frame

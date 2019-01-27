@@ -64,6 +64,11 @@ public class GameManager : MonoBehaviour
     public GameObject parentDiamond;
     public GameObject hitboxDiamond;
 
+    public KeyCode keyLeft;
+    public KeyCode keyDown;
+    public KeyCode keyUp;
+    public KeyCode keyRight;
+
     void loadLevel()
     {
         Dictionary<string, string> song = SongSelectParser.Instance.selectedSong;
@@ -274,7 +279,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void spawnLeftBigRing(HitObject hitObject)
+    void spawnLeftBigRing(HitObject hitObject, KeyCode key)
     {
         var currentRing = Instantiate(leftBigRing, leftSpawnerBig.position, leftSpawnerBig.rotation);
         currentRing.transform.SetParent(parentObject.transform);
@@ -284,10 +289,11 @@ public class GameManager : MonoBehaviour
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         currentRing.tag = "rings";
     }
 
-    void spawnLeftSmallRing(HitObject hitObject)
+    void spawnLeftSmallRing(HitObject hitObject, KeyCode key)
     {
         var currentRing = Instantiate(leftSmallRing, leftSpawnerSmall.position, leftSpawnerSmall.rotation);
         currentRing.transform.SetParent(parentObject.transform);
@@ -297,10 +303,11 @@ public class GameManager : MonoBehaviour
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         currentRing.tag = "rings";
     }
 
-    void spawnRightBigRing(HitObject hitObject)
+    void spawnRightBigRing(HitObject hitObject, KeyCode key)
     {
         var currentRing = Instantiate(rightBigRing, rightSpawnerBig.position, rightSpawnerBig.rotation);
         currentRing.transform.SetParent(parentObject.transform);
@@ -310,10 +317,11 @@ public class GameManager : MonoBehaviour
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         currentRing.tag = "rings";
     }
 
-    void spawnRightSmallRing(HitObject hitObject)
+    void spawnRightSmallRing(HitObject hitObject, KeyCode key)
     {
         var currentRing = Instantiate(rightSmallRing, rightSpawnerSmall.position, rightSpawnerSmall.rotation);
         currentRing.transform.SetParent(parentObject.transform);
@@ -323,10 +331,11 @@ public class GameManager : MonoBehaviour
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         currentRing.tag = "rings";
     }
 
-    void spawnLeftBigMine(HitObject hitObject)
+    void spawnLeftBigMine(HitObject hitObject, KeyCode key)
     {
         var currentRing = Instantiate(leftBigMine, leftSpawnerBig.position, leftSpawnerBig.rotation);
         currentRing.transform.SetParent(parentObject.transform);
@@ -336,10 +345,11 @@ public class GameManager : MonoBehaviour
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         currentRing.tag = "rings";
     }
 
-    void spawnLeftSmallMine(HitObject hitObject)
+    void spawnLeftSmallMine(HitObject hitObject, KeyCode key)
     {
         var currentRing = Instantiate(leftSmallMine, leftSpawnerSmall.position, leftSpawnerSmall.rotation);
         currentRing.transform.SetParent(parentObject.transform);
@@ -349,10 +359,11 @@ public class GameManager : MonoBehaviour
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         currentRing.tag = "rings";
     }
 
-    void spawnRightBigMine(HitObject hitObject)
+    void spawnRightBigMine(HitObject hitObject, KeyCode key)
     {
         var currentRing = Instantiate(rightBigMine, rightSpawnerBig.position, rightSpawnerBig.rotation);
         currentRing.transform.SetParent(parentObject.transform);
@@ -362,10 +373,11 @@ public class GameManager : MonoBehaviour
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         currentRing.tag = "rings";
     }
 
-    void spawnRightSmallMine(HitObject hitObject)
+    void spawnRightSmallMine(HitObject hitObject, KeyCode key)
     {
         var currentRing = Instantiate(rightSmallMine, rightSpawnerSmall.position, rightSpawnerSmall.rotation);
         currentRing.transform.SetParent(parentObject.transform);
@@ -375,10 +387,11 @@ public class GameManager : MonoBehaviour
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         currentRing.tag = "rings";
     }
 
-    void spawnLeftBigHold(HitObject hitObject)
+    void spawnLeftBigHold(HitObject hitObject, KeyCode key)
     {
         int offsetDiff = hitObject.getEndOffset() - hitObject.getOffset();
         var currentRing = Instantiate(leftBigRing, leftSpawnerBig.position, leftSpawnerBig.rotation);
@@ -391,6 +404,7 @@ public class GameManager : MonoBehaviour
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         currentRing.tag = "rings";
         midRing.transform.SetParent(parentObject.transform);
         midRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
@@ -399,6 +413,7 @@ public class GameManager : MonoBehaviour
         midRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         midRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         midRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         midRing.tag = "hold";
         endRing.transform.SetParent(parentObject.transform);
         endRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
@@ -407,10 +422,11 @@ public class GameManager : MonoBehaviour
         endRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         endRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         endRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         endRing.tag = "end";
     }
 
-    void spawnLeftSmallHold(HitObject hitObject)
+    void spawnLeftSmallHold(HitObject hitObject, KeyCode key)
     {
         var currentRing = Instantiate(leftSmallMine, leftSpawnerSmall.position, leftSpawnerSmall.rotation);
         currentRing.transform.SetParent(parentObject.transform);
@@ -420,10 +436,11 @@ public class GameManager : MonoBehaviour
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         currentRing.tag = "rings";
     }
 
-    void spawnRightBigHold(HitObject hitObject)
+    void spawnRightBigHold(HitObject hitObject, KeyCode key)
     {
         var currentRing = Instantiate(rightBigMine, rightSpawnerBig.position, rightSpawnerBig.rotation);
         currentRing.transform.SetParent(parentObject.transform);
@@ -433,10 +450,11 @@ public class GameManager : MonoBehaviour
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         currentRing.tag = "rings";
     }
 
-    void spawnRightSmallHold(HitObject hitObject)
+    void spawnRightSmallHold(HitObject hitObject, KeyCode key)
     {
         var currentRing = Instantiate(rightSmallMine, rightSpawnerSmall.position, rightSpawnerSmall.rotation);
         currentRing.transform.SetParent(parentObject.transform);
@@ -446,70 +464,84 @@ public class GameManager : MonoBehaviour
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<Ring>().keyCode = key;
         currentRing.tag = "rings";
     }
 
-    void spawnDiamondRing(HitObject hitObject)
+    void spawnDiamondRing(HitObject hitObject, KeyCode key)
     {
         var currentRing = Instantiate(diamondRing, new Vector3(-10.24479f, 95.76189f, -0.1007616f), Quaternion.identity);
         currentRing.transform.SetParent(parentDiamond.transform, false);
         currentRing.GetComponent<DiamondRing>().hitboxScale = hitboxDiamond.transform.localScale;
         currentRing.GetComponent<DiamondRing>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<DiamondRing>().beatsShownInAdvance = scrollDelay;
+        currentRing.GetComponent<DiamondRing>().keyCode = key;
     }
 
     public void spawnNotes(HitObject hitObject)
     {
-        if (memoryMode) // Currently in a memory timing section
+        if (hitObject.getX() == 64) // LEFT
         {
-            spawnDiamondRing(hitObject);
-        }
-        else if (hitObject.getX() == 64)
-        {
-            if (hitObject.IsMine())
+            if (memoryMode) // Currently in a memory timing section
             {
-                spawnLeftBigMine(hitObject);
+                spawnDiamondRing(hitObject, keyLeft);
+            }
+            else if (hitObject.IsMine())
+            {
+                spawnLeftBigMine(hitObject, keyLeft);
             }
             else if(hitObject.IsHold())
             {
-                spawnLeftBigHold(hitObject);
+                spawnLeftBigHold(hitObject, keyLeft);
             }
             else
             {
-                spawnLeftBigRing(hitObject);
+                spawnLeftBigRing(hitObject, keyLeft);
             }
         }
-        else if (hitObject.getX() == 192)
+        else if (hitObject.getX() == 192) // DOWN
         {
-            if (hitObject.IsMine())
+            if (memoryMode)
             {
-                spawnLeftSmallMine(hitObject);
+                spawnDiamondRing(hitObject, keyDown);
+            }
+            else if (hitObject.IsMine())
+            {
+                spawnLeftSmallMine(hitObject, keyDown);
             }
             else
             {
-                spawnLeftSmallRing(hitObject);
+                spawnLeftSmallRing(hitObject, keyDown);
             }
         }
-        else if (hitObject.getX() == 320)
+        else if (hitObject.getX() == 320) // UP
         {
-            if (hitObject.IsMine())
+            if (memoryMode)
             {
-                spawnRightBigMine(hitObject);
+                spawnDiamondRing(hitObject, keyUp);
+            }
+            else if (hitObject.IsMine())
+            {
+                spawnRightSmallMine(hitObject, keyUp);
             }
             else
             {
-                spawnRightBigRing(hitObject);
+                spawnRightSmallRing(hitObject, keyUp);
             }
         }
-        else if (hitObject.getX() == 448)
+        else if (hitObject.getX() == 448) // RIGHT
         {
-            if (hitObject.IsMine())
+            if (memoryMode)
             {
-                spawnRightSmallMine(hitObject);
+                spawnDiamondRing(hitObject, keyRight);
+            }
+            else if (hitObject.IsMine())
+            {
+                spawnRightBigMine(hitObject, keyRight);
             }
             else
             {
-                spawnRightSmallRing(hitObject);
+                spawnRightBigRing(hitObject, keyRight);
             }
         }
     }
