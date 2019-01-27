@@ -39,7 +39,8 @@ public class GameManager : MonoBehaviour
     public int numGoodHit;
 	
 	public Texture whiteTexture;
-	
+    public int timeBuffer; // time in miliseconds before song starts
+    public AudioClip audioClip;
 
     public static GameManager instance;
 
@@ -73,9 +74,11 @@ public class GameManager : MonoBehaviour
     {
         Dictionary<string, string> song = SongSelectParser.Instance.selectedSong;
         string filename = song["SongMap"];
-        AudioClip audioClip = Resources.Load<AudioClip>(song["SongPreview"]);
+        audioClip = Resources.Load<AudioClip>(song["SongPreview"]);
         songLength = audioClip.length;
-        audioSource.PlayOneShot(audioClip);
+        audioSource.clip = audioClip;
+        
+        //StartCoroutine(PlaySong(audioClip));
 
         string line;
         bool timingPointsStart = false;
@@ -153,8 +156,11 @@ public class GameManager : MonoBehaviour
         numGoodHit = 0;
         simSaysBaseScore = 100;
         noteBaseScore = 10;
-        scrollDelay = 0;
-        //GetComponent<AudioSource>().Play();
+        timeBuffer = 3000; // TODO: change this to adapt to the song
+
+        // Grab first timing point information
+        noteScroller.GetComponent<NoteScroller>().UpdateBPM(timingPointsList[0].getMsPerBeat());
+        scrollDelay = noteScroller.GetComponent<NoteScroller>().ReturnDelay();
 
     }
 	
@@ -180,44 +186,47 @@ public class GameManager : MonoBehaviour
     }
 
 
-    void FixedUpdate() {
+    void Update() {
 
         if(startTime == 0)
         {
-            startTime = AudioSettings.dspTime;
+            startTime = AudioSettings.dspTime + (timeBuffer/1000);
+            audioSource.PlayDelayed(timeBuffer / 1000);
             //Debug.Log("start time: " + startTime);
         }
 
-        //gets latest timing points
-        offsetTime = (AudioSettings.dspTime - startTime) * 1000 + scrollDelay;
-        //Debug.Log("OFFSET TIME: " + offsetTime);
-        if (timingIndex < timingPointsList.Count && offsetTime >= timingPointsList[timingIndex].getOffset())
-        {
-            noteScroller.GetComponent<NoteScroller>().UpdateBPM(timingPointsList[timingIndex].getMsPerBeat());
-            scrollDelay = noteScroller.GetComponent<NoteScroller>().ReturnDelay();
-            //Debug.Log("ScrollDelay: " + scrollDelay);
-            if (timingPointsList[timingIndex].getPlaymode() == 0) //note mode
-            {
-                baseScore = noteBaseScore;
-                memoryMode = false;
-            } else
-            {
-                baseScore = simSaysBaseScore;
-                memoryMode = true;
-            }
-            timingIndex++;
-        }
 
-        //generate notes for simon says and ddr
         while (index < hitObjectsList.Count)
         {
+            //gets latest timing points
+            offsetTime = (AudioSettings.dspTime - startTime) * 1000 + scrollDelay;
+            
+            //Debug.Log("OFFSET TIME: " + offsetTime);
+            if (timingIndex < timingPointsList.Count && offsetTime >= timingPointsList[timingIndex].getOffset())
+            {
+                noteScroller.GetComponent<NoteScroller>().UpdateBPM(timingPointsList[timingIndex].getMsPerBeat());
+                scrollDelay = noteScroller.GetComponent<NoteScroller>().ReturnDelay();
+                //Debug.Log("ScrollDelay: " + scrollDelay);
+                if (timingPointsList[timingIndex].getPlaymode() == 0) //note mode
+                {
+                    baseScore = noteBaseScore;
+                    memoryMode = false;
+                } else
+                {
+                    baseScore = simSaysBaseScore;
+                    memoryMode = true;
+                }
+                timingIndex++;
+            }
+        
+            //generate notes for simon says and ddr
             noteOffsetTime = (AudioSettings.dspTime - startTime) * 1000;
             //Debug.Log("Note start time: " + noteOffsetTime);
             noteOffsetTime += scrollDelay;
             HitObject hitObject = hitObjectsList[index];
 
             if (noteOffsetTime >= hitObject.getOffset()) {
-                //Debug.Log("Note " + hitObject.getOffset() + " Spawn time: " + offsetTime + "\nNote offset: " + noteOffsetTime);
+                Debug.Log("Note " + hitObject.getOffset() + " Spawn time: " + offsetTime + "\nNote offset: " + noteOffsetTime);
                 if ((hitObject.IsNote() || hitObject.IsHold()) && !noteFlag)
                 {
                     //Debug.Log("Spawning note " + hitObject.getOffset() + " to be hit at: " + noteOffsetTime);
@@ -253,7 +262,7 @@ public class GameManager : MonoBehaviour
 
         //Debug.Log("Song length: " + songLength);
         timer = AudioSettings.dspTime - startTime;
-        if (timer >= songLength)
+        if ((timer + timeBuffer/1000) >= songLength)
         {
             SceneManager.LoadScene("RankingPanel");
         }
