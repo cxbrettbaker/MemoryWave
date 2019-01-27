@@ -59,6 +59,10 @@ public class GameManager : MonoBehaviour
     public GameObject parentObject;
     public GameObject hitbox;
     public GameObject midHold;
+    public bool memoryMode;
+    public GameObject diamondRing;
+    public GameObject parentDiamond;
+    public GameObject hitboxDiamond;
 
     void loadLevel()
     {
@@ -189,11 +193,11 @@ public class GameManager : MonoBehaviour
             if (timingPointsList[timingIndex].getPlaymode() == 0) //note mode
             {
                 baseScore = noteBaseScore;
-                simonSaysController.GetComponent<simonSaysManager>().disableInput();
+                memoryMode = false;
             } else
             {
                 baseScore = simSaysBaseScore;
-                simonSaysController.GetComponent<simonSaysManager>().enableInput();
+                memoryMode = true;
             }
             timingIndex++;
         }
@@ -444,9 +448,22 @@ public class GameManager : MonoBehaviour
         currentRing.tag = "rings";
     }
 
+    void spawnDiamondRing(HitObject hitObject)
+    {
+        var currentRing = Instantiate(diamondRing, new Vector3(-10.24479f, 95.76189f, -0.1007616f), Quaternion.identity);
+        currentRing.transform.SetParent(parentDiamond.transform, false);
+        currentRing.GetComponent<DiamondRing>().hitboxScale = hitboxDiamond.transform.localScale;
+        currentRing.GetComponent<DiamondRing>().beatOfThisNote = hitObject.getOffset();
+        currentRing.GetComponent<DiamondRing>().beatsShownInAdvance = scrollDelay;
+    }
+
     public void spawnNotes(HitObject hitObject)
     {
-        if (hitObject.getX() == 64)
+        if (memoryMode) // Currently in a memory timing section
+        {
+            spawnDiamondRing(hitObject);
+        }
+        else if (hitObject.getX() == 64)
         {
             if (hitObject.IsMine())
             {
