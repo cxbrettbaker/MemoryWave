@@ -14,7 +14,7 @@ public class Ring : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        songPosInBeats = Convert.ToSingle(FindObjectOfType<GameManager>().offsetTime);
+        songPosInBeats = Convert.ToSingle(FindObjectOfType<GameManager>().timer * 1000);
         transform.position = Vector3.Lerp(spawnerPos, new Vector3(spawnerPos.x, hitboxPos.y-(spawnerPos.y - hitboxPos.y), spawnerPos.z), (beatsShownInAdvance - (beatOfThisNote - songPosInBeats))/(beatsShownInAdvance*2));
     }
 }

@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     public GameObject noteController;
     public GameObject noteScroller;
     public AudioSource audioSource;
-    private double timer = 0.0f;
+    public double timer = 0.0f;
     private float songLength;
     public double score;
     private double simSaysBaseScore;
@@ -148,6 +148,7 @@ public class GameManager : MonoBehaviour
         numGoodHit = 0;
         simSaysBaseScore = 100;
         noteBaseScore = 10;
+        scrollDelay = 0;
         //GetComponent<AudioSource>().Play();
 
     }
@@ -183,7 +184,7 @@ public class GameManager : MonoBehaviour
         }
 
         //gets latest timing points
-        offsetTime = (AudioSettings.dspTime - startTime) * 1000;
+        offsetTime = (AudioSettings.dspTime - startTime) * 1000 + scrollDelay;
         //Debug.Log("OFFSET TIME: " + offsetTime);
         if (timingIndex < timingPointsList.Count && offsetTime >= timingPointsList[timingIndex].getOffset())
         {

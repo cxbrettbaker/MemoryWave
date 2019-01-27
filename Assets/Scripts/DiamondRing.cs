@@ -68,7 +68,7 @@ public class DiamondRing : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        songPosInBeats = Convert.ToSingle(FindObjectOfType<GameManager>().offsetTime);
+        songPosInBeats = Convert.ToSingle(FindObjectOfType<GameManager>().timer *1000);
         transform.localScale = Vector3.Lerp(spawnScale, hitboxScale - (spawnScale-hitboxScale), (beatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / (beatsShownInAdvance*2));
     }
 }
