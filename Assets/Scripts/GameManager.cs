@@ -99,14 +99,14 @@ public class GameManager : MonoBehaviour
             }
             //Debug.Log(line);
 
-            if (line == "#TimingPoints")
+            if (line == "[TimingPoints]")
             {
                 //Debug.Log("TimingPoints start");
                 hitObjectsStart = false;
                 timingPointsStart = true;
                 continue;
             }
-            if (line == "#HitObjects")
+            if (line == "[HitObjects]")
             {
                 //Debug.Log("hitobject start");
                 hitObjectsStart = true;
@@ -226,7 +226,7 @@ public class GameManager : MonoBehaviour
             HitObject hitObject = hitObjectsList[index];
 
             if (noteOffsetTime >= hitObject.getOffset()) {
-                Debug.Log("Note " + hitObject.getOffset() + " Spawn time: " + offsetTime + "\nNote offset: " + noteOffsetTime);
+                //Debug.Log("Note " + hitObject.getOffset() + " Spawn time: " + offsetTime + "\nNote offset: " + noteOffsetTime);
                 if ((hitObject.IsNote() || hitObject.IsHold()) && !noteFlag)
                 {
                     //Debug.Log("Spawning note " + hitObject.getOffset() + " to be hit at: " + noteOffsetTime);
@@ -400,39 +400,37 @@ public class GameManager : MonoBehaviour
         currentRing.tag = "rings";
     }
 
+    IEnumerator spawnHoldNote(Transform spawner, HitObject hitObject, int offsetDiff, KeyCode key)
+    {
+        Debug.Log("Insantiated at: " + AudioSettings.dspTime * 1000);
+        var endRing = Instantiate(leftBigRing, leftSpawnerBig.position, leftSpawnerBig.rotation);
+        endRing.transform.SetParent(parentObject.transform);
+        endRing.transform.localScale = new Vector3(1.5f, 0.85f, 0);
+        yield return new WaitForSecondsRealtime(offsetDiff / 1000f);
+        Debug.Log("Moving at: " + AudioSettings.dspTime * 1000);
+        endRing.AddComponent<Ring>();
+        endRing.GetComponent<Ring>().spawnerPos = leftSpawnerBig.position;
+        endRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
+        endRing.GetComponent<Ring>().beatOfThisNote = hitObject.getEndOffset();
+        endRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
+        endRing.GetComponent<Ring>().keyCode = key;
+
+    }
+
     void spawnLeftBigHold(HitObject hitObject, KeyCode key)
     {
         int offsetDiff = hitObject.getEndOffset() - hitObject.getOffset();
         var currentRing = Instantiate(leftBigRing, leftSpawnerBig.position, leftSpawnerBig.rotation);
-        var midRing = Instantiate(midHold, leftSpawnerBig.position, leftSpawnerBig.rotation);
-        var endRing = Instantiate(leftBigRing, leftSpawnerBig.position + new Vector3(0,30,0), leftSpawnerBig.rotation);
         currentRing.transform.SetParent(parentObject.transform);
-        currentRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
+        currentRing.transform.localScale = new Vector3(1.5f, 0.85f, 0);
         currentRing.AddComponent<Ring>();
         currentRing.GetComponent<Ring>().spawnerPos = leftSpawnerBig.position;
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
         currentRing.GetComponent<Ring>().keyCode = key;
-        currentRing.tag = "rings";
-        midRing.transform.SetParent(parentObject.transform);
-        midRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
-        midRing.AddComponent<Ring>();
-        midRing.GetComponent<Ring>().spawnerPos = leftSpawnerBig.position;
-        midRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-        midRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-        midRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-        currentRing.GetComponent<Ring>().keyCode = key;
-        midRing.tag = "hold";
-        endRing.transform.SetParent(parentObject.transform);
-        endRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
-        endRing.AddComponent<Ring>();
-        endRing.GetComponent<Ring>().spawnerPos = leftSpawnerBig.position;
-        endRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-        endRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-        endRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-        currentRing.GetComponent<Ring>().keyCode = key;
-        endRing.tag = "end";
+        StopCoroutine(spawnHoldNote(leftSpawnerBig, hitObject, offsetDiff, key));
+        StartCoroutine(spawnHoldNote(leftSpawnerBig, hitObject, offsetDiff, key));
     }
 
     void spawnLeftSmallHold(HitObject hitObject, KeyCode key)

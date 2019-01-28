@@ -1,8 +1,9 @@
-#General
+[General]
 AudioFilename:Alan Walker - Faded.mp3 
 AudioLeadIn:0 
 PreviewTime:-1
-#Metadata
+
+[Metadata]
 Title:Faded
 TitleUnicode:Faded
 Artist:Alan Walker
@@ -13,17 +14,20 @@ Source:
 Tags:
 LevelID:0
 LevelSetID:-1
-#Difficulty
+
+[Difficulty]
 HPDrainRate:5
 OverallDifficulty:1
 ApproachRate:5
-#TimingPoints
+
+[TimingPoints]
 186,3000,4,100,0
 3186,3000,4,100,1
 5853,3000,4,100,0
 8519,3000,4,100,-1
 11186,3000,4,100,0
-#HitObjects
+
+[HitObjects]
 64,192,519,132,1186,0
 64,192,1186,8,0
 64,192,1853,16,0

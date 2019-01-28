@@ -140,16 +140,21 @@ public class SongSelectParser : MonoBehaviour
             int maxBpm = 0, startOffset = 0, memSegs = 0;
             while ((line = file.ReadLine()) != null)
             {
+                line = line.Trim();
+                if (line.Length == 0 || line[0] == '/')
+                {
+                    continue;
+                }
                 parts = line.Split(':');
                 if (metaInfo.Contains(parts[0]))
                 {
                     songInfo[parts[0]] = parts[1];
                 }
-                else if (line == "#TimingPoints")
+                else if (line == "[TimingPoints]")
                 {
                     readTimingPoints = true;
                 }
-                else if (line == "#HitObjects")
+                else if (line == "[HitObjects]")
                 {
                     readTimingPoints = false;
                     readHitObject = true;

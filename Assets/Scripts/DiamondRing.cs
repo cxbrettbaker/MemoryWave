@@ -27,18 +27,18 @@ public class DiamondRing : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "goodHitbox")
+        if (collision.tag == "goodDiamondHitbox")
         {
             goodHit = true;
             hit = true;
             gameObject.SetActive(false);
         }
-        if (collision.tag == "normalHitbox")
+        if (collision.tag == "normalDiamondHitbox")
         {
             hit = true;
             gameObject.GetComponent<LineRenderer>().enabled = false;
         }
-        else if (collision.tag == "despawner")
+        else if (collision.tag == "despawnerDiamond")
         {
             Destroy(gameObject);
         }
@@ -46,12 +46,12 @@ public class DiamondRing : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.tag == "goodHitbox")
+        if (collision.tag == "goodDiamondHitbox")
         {
             goodHit = false;
             hit = false;
         }
-        if (collision.tag == "normalHitbox")
+        if (collision.tag == "normalDiamondHitbox")
         {
             hit = false;
             goodHit = false;

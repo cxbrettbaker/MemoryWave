@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 2153478}
   - component: {fileID: 2153477}
   m_Layer: 5
-  m_Name: greenButton
+  m_Name: greenDiamond
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -212,7 +212,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 11e4a679b4cf30240b51fec011ef5fde, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 54cacf58852c5a24d84a7c6d1f2e2e46, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -908,7 +908,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2036545072}
-  m_RootOrder: 7
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -944,7 +944,7 @@ GameObject:
   - component: {fileID: 609187243}
   - component: {fileID: 609187242}
   m_Layer: 5
-  m_Name: blueButton
+  m_Name: blueDiamond
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1031,7 +1031,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 96ba0f4dcadee0f4eafe1b8df2a5bf93, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c9215c780c0730d41a06966245b8e42c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1084,7 +1084,7 @@ RectTransform:
   - {fileID: 538497722}
   - {fileID: 978468462}
   m_Father: {fileID: 2036545072}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.25375, y: 0.28666672}
   m_AnchorMax: {x: 0.7462501, y: 1}
@@ -1158,7 +1158,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2036545072}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -1359,7 +1359,7 @@ GameObject:
   - component: {fileID: 999510449}
   - component: {fileID: 999510448}
   m_Layer: 5
-  m_Name: yellowButton
+  m_Name: yellowDiamond
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1446,7 +1446,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: b1fab497ae5464041a811857a7659fbc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 89f3275a01a67ed478f04d9a83837cf1, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2447,7 +2447,7 @@ RectTransform:
   m_LocalScale: {x: 1.0938029, y: 1.0286806, z: 0.9922521}
   m_Children: []
   m_Father: {fileID: 2036545072}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.25375, y: 0.28666672}
   m_AnchorMax: {x: 0.7462501, y: 1}
@@ -2580,7 +2580,7 @@ GameObject:
   - component: {fileID: 1644658366}
   - component: {fileID: 1644658365}
   m_Layer: 0
-  m_Name: simonSaysManager
+  m_Name: MemoryManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2601,16 +2601,16 @@ MonoBehaviour:
   gameButtonPrefab: {fileID: 550762898010842864, guid: 6a7d87c186fca5b4b9a9d41010f5de0e,
     type: 3}
   buttonSettings:
-  - normalColor: {r: 0.8679245, g: 0.39711642, b: 0.39711642, a: 0.7254902}
+  - normalColor: {r: 0.5660378, g: 0.4352083, b: 0.4352083, a: 0.38431373}
     highlightColor: {r: 1, g: 0, b: 0, a: 1}
-  - normalColor: {r: 0.4995995, g: 0.5500755, b: 0.9716981, a: 0.78431374}
+  - normalColor: {r: 0.36765754, g: 0.38288972, b: 0.509434, a: 0.38431373}
     highlightColor: {r: 0, g: 0.11872864, b: 1, a: 1}
-  - normalColor: {r: 0.98392886, g: 1, b: 0.740566, a: 0.7921569}
+  - normalColor: {r: 0.56806856, g: 0.5754717, b: 0.4533197, a: 0.38431373}
     highlightColor: {r: 0.9960785, g: 1, b: 0, a: 1}
-  - normalColor: {r: 0.4199893, g: 0.735849, b: 0.45101127, a: 0.76862746}
+  - normalColor: {r: 0.4221698, g: 0.5, b: 0.42985675, a: 0.38431373}
     highlightColor: {r: 0, g: 1, b: 0.07963061, a: 1}
-  - normalColor: {r: 0.53857255, g: 0, b: 0.6603774, a: 0.76862746}
-    highlightColor: {r: 0.22833401, g: 0.0036044791, b: 0.254717, a: 1}
+  - normalColor: {r: 0.6982264, g: 0.14324492, b: 0.8207547, a: 0.76862746}
+    highlightColor: {r: 0.23082058, g: 0.15850836, b: 0.24528301, a: 1}
   gameFieldPanelTransform: {fileID: 2036545072}
   redButton: {fileID: 1720272159}
   blueButton: {fileID: 609187240}
@@ -3128,7 +3128,7 @@ GameObject:
   - component: {fileID: 1720272162}
   - component: {fileID: 1720272161}
   m_Layer: 5
-  m_Name: redButton
+  m_Name: redDiamond
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3215,7 +3215,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: d8ec62b6a33c4134e9b6818fd571a810, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0b7f29b38444c094b97fb6f4e9e0029c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3403,10 +3403,10 @@ RectTransform:
   - {fileID: 787998556}
   - {fileID: 223047898}
   - {fileID: 944634980}
-  - {fileID: 574158385}
   - {fileID: 757337092}
   - {fileID: 1493073378}
   - {fileID: 729575735}
+  - {fileID: 574158385}
   - {fileID: 430060620}
   m_Father: {fileID: 1242934966}
   m_RootOrder: 0

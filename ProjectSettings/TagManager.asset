@@ -12,6 +12,8 @@ TagManager:
   - despawner
   - hold
   - end
+  - normalDiamondHitbox
+  - despawnerDiamond
   layers:
   - Default
   - TransparentFX
