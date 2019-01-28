@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class EndHold : MonoBehaviour
 {
@@ -17,53 +18,48 @@ public class EndHold : MonoBehaviour
 
     public GameObject startHold;
     public GameObject midHold;
+    public bool passed;
+    public GameObject fakeStartRing;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        passed = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (hit && Input.GetKeyDown(keyCode))
-        {
-            GameManager.instance.NoteHit(goodHit);
-            gameObject.SetActive(false);
-        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "goodHitbox")
+        if(startHold.GetComponent<StartHold>().fakeStartRing != null)
+            startHold.GetComponent<StartHold>().fakeStartRing.GetComponent<Image>().enabled = false;
+        if (collision.tag == "despawner")
         {
-            goodHit = true;
-            hit = true;
-        }
-        if (collision.tag == "normalHitbox")
-        {
-            hit = true;
-        }
-        else if (collision.tag == "despawner")
-        {
+            GameManager.instance.NoteHit(goodHit);
+            Destroy(startHold.GetComponent<StartHold>().fakeStartRing);
             Destroy(startHold);
             Destroy(midHold);
             Destroy(gameObject);
+        }
+        else if (midHold.GetComponent<MidHold>().passed && Input.GetKey(keyCode))
+        {
+            gameObject.GetComponent<Image>().enabled = false;
+            passed = true;
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.tag == "goodHitbox")
+        if (passed)
         {
-            goodHit = false;
-            hit = false;
+            GameManager.instance.NoteHit(true);
         }
-        if (collision.tag == "normalHitbox")
+        else if(collision.tag == "normalHitbox")
         {
-            hit = false;
-            goodHit = false;
+            gameObject.GetComponent<Image>().color = Color.black;
             GameManager.instance.NoteMissed();
         }
     }
@@ -73,5 +69,16 @@ public class EndHold : MonoBehaviour
     {
         songPosInBeats = Convert.ToSingle(FindObjectOfType<GameManager>().timer * 1000);
         transform.position = Vector3.Lerp(spawnerPos, new Vector3(spawnerPos.x, hitboxPos.y - (spawnerPos.y - hitboxPos.y), spawnerPos.z), (beatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / (beatsShownInAdvance * 2));
+    }
+
+    public void Initialize(Vector3 spawner, Vector3 hitbox, int offset, float scrollDelay, KeyCode key, GameObject startRing, GameObject midHold)
+    {
+        spawnerPos = spawner;
+        hitboxPos = hitbox;
+        beatOfThisNote = Convert.ToSingle(offset);
+        beatsShownInAdvance = scrollDelay;
+        keyCode = key;
+        startHold = startRing;
+        this.midHold = midHold;
     }
 }

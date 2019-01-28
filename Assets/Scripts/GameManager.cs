@@ -159,8 +159,7 @@ public class GameManager : MonoBehaviour
         timeBuffer = 3000; // TODO: change this to adapt to the song
 
         // Grab first timing point information
-        noteScroller.GetComponent<NoteScroller>().UpdateBPM(timingPointsList[0].getMsPerBeat());
-        scrollDelay = noteScroller.GetComponent<NoteScroller>().ReturnDelay();
+        scrollDelay = noteScroller.GetComponent<NoteScroller>().UpdateBPM(timingPointsList[0].getMsPerBeat());
 
     }
 	
@@ -204,9 +203,7 @@ public class GameManager : MonoBehaviour
             //Debug.Log("OFFSET TIME: " + offsetTime);
             if (timingIndex < timingPointsList.Count && offsetTime >= timingPointsList[timingIndex].getOffset())
             {
-                noteScroller.GetComponent<NoteScroller>().UpdateBPM(timingPointsList[timingIndex].getMsPerBeat());
-                scrollDelay = noteScroller.GetComponent<NoteScroller>().ReturnDelay();
-                //Debug.Log("ScrollDelay: " + scrollDelay);
+                scrollDelay = noteScroller.GetComponent<NoteScroller>().UpdateBPM(timingPointsList[timingIndex].getMsPerBeat());            
                 if (timingPointsList[timingIndex].getPlaymode() == 0) //note mode
                 {
                     baseScore = noteBaseScore;
@@ -219,9 +216,7 @@ public class GameManager : MonoBehaviour
                 timingIndex++;
             }
         
-            //generate notes for simon says and ddr
             noteOffsetTime = (AudioSettings.dspTime - startTime) * 1000;
-            //Debug.Log("Note start time: " + noteOffsetTime);
             noteOffsetTime += scrollDelay;
             HitObject hitObject = hitObjectsList[index];
 
@@ -229,8 +224,6 @@ public class GameManager : MonoBehaviour
                 //Debug.Log("Note " + hitObject.getOffset() + " Spawn time: " + offsetTime + "\nNote offset: " + noteOffsetTime);
                 if ((hitObject.IsNote() || hitObject.IsHold()) && !noteFlag)
                 {
-                    //Debug.Log("Spawning note " + hitObject.getOffset() + " to be hit at: " + noteOffsetTime);
-                    //Debug.Log("noteStartTime: " + noteStartTime);
                     spawnNotes(hitObject);
                 }
                 noteFlag = true;
@@ -251,7 +244,7 @@ public class GameManager : MonoBehaviour
                     StartCoroutine(FlashMemoryPrompt("green", hitObject.IsflashBlack()));
                 }
             }
-            else //if next hit object dont need to be spawned now
+            else // if next hit object doesn't need to be spawned now
             {
                 break;
             }
@@ -302,52 +295,32 @@ public class GameManager : MonoBehaviour
             currentRing.transform.SetParent(parentObject.transform);
             currentRing.transform.localScale = ring.transform.localScale;
             currentRing.AddComponent<Ring>();
-            currentRing.GetComponent<Ring>().spawnerPos = spawner.position;
-            currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-            currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-            currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-            currentRing.GetComponent<Ring>().keyCode = key;
+            currentRing.GetComponent<Ring>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key);
         }
 
     }
 
     IEnumerator spawnStepHold(GameObject ring, Transform spawner, HitObject hitObject, int offsetDiff, KeyCode key)
     {
-        GameObject startRing = Instantiate(ring, spawner.position, spawner.rotation);
-        startRing.transform.SetParent(parentObject.transform);
-        startRing.transform.localScale = ring.transform.localScale;
-        startRing.AddComponent<StartHold>();
-        startRing.GetComponent<StartHold>().spawnerPos = spawner.position;
-        startRing.GetComponent<StartHold>().hitboxPos = hitbox.transform.position;
-        startRing.GetComponent<StartHold>().beatOfThisNote = hitObject.getOffset();
-        startRing.GetComponent<StartHold>().beatsShownInAdvance = scrollDelay;
-        startRing.GetComponent<StartHold>().keyCode = key;
-
-        //Debug.Log("Insantiated at: " + AudioSettings.dspTime * 1000);
-        GameObject endRing = Instantiate(ring, spawner.position, spawner.rotation);
-        endRing.transform.SetParent(parentObject.transform);
-        endRing.transform.localScale = ring.transform.localScale;
+        GameObject startHold = Instantiate(ring, spawner.position, spawner.rotation);
+        startHold.transform.SetParent(parentObject.transform);
+        startHold.transform.localScale = ring.transform.localScale;
+        startHold.AddComponent<StartHold>();
 
         GameObject midHold = Instantiate(midRing, spawner.position, spawner.rotation);
         midHold.transform.SetParent(parentObject.transform);
         midHold.AddComponent<MidHold>();
-        midHold.GetComponent<MidHold>().spawnerPos = spawner.position;
-        midHold.GetComponent<MidHold>().hitboxPos = hitbox.transform.position;
-        midHold.GetComponent<MidHold>().beatOfThisNote = hitObject.getOffset();
-        midHold.GetComponent<MidHold>().beatsShownInAdvance = scrollDelay;
-        midHold.GetComponent<MidHold>().keyCode = key;
-        midHold.GetComponent<MidHold>().startRing = startRing;
-        midHold.GetComponent<MidHold>().endRing = endRing;
+        
+        GameObject endHold = Instantiate(ring, spawner.position, spawner.rotation);
+        endHold.transform.SetParent(parentObject.transform);
+        endHold.transform.localScale = ring.transform.localScale;
+
+        startHold.GetComponent<StartHold>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key, midHold, endHold, parentObject, ring);
+        midHold.GetComponent<MidHold>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key, startHold, endHold);
+        
         yield return new WaitForSecondsRealtime(offsetDiff / 1000f);
-        //Debug.Log("Moving at: " + AudioSettings.dspTime * 1000);
-        endRing.AddComponent<EndHold>();
-        endRing.GetComponent<EndHold>().spawnerPos = spawner.position;
-        endRing.GetComponent<EndHold>().hitboxPos = hitbox.transform.position;
-        endRing.GetComponent<EndHold>().beatOfThisNote = hitObject.getEndOffset();
-        endRing.GetComponent<EndHold>().beatsShownInAdvance = scrollDelay;
-        endRing.GetComponent<EndHold>().keyCode = key;
-        endRing.GetComponent<EndHold>().startHold = startRing;
-        endRing.GetComponent<EndHold>().midHold = midHold;
+        endHold.AddComponent<EndHold>();
+        endHold.GetComponent<EndHold>().Initialize(spawner.position, hitbox.transform.position, hitObject.getEndOffset(), scrollDelay, key, startHold, midHold);
     }
 
     void spawnMemoryNote(GameObject ring, Transform spawner, HitObject hitObject, KeyCode key)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class MidHold : MonoBehaviour
 {
@@ -19,36 +20,75 @@ public class MidHold : MonoBehaviour
     public RectTransform rt;
     public GameObject startRing;
     public GameObject endRing;
-    public bool move = false;
+    [SerializeField]
+    bool pressed;
+    bool triggered;
+    public bool passed;
+    BoxCollider2D bc;
+    public GameObject realStartRing;
 
     // Start is called before the first frame update
     void Start()
     {
         rt = gameObject.GetComponent<RectTransform>();
-        rt.localScale = new Vector3(1f, 1f, 1f);
+        pressed = false;
+        passed = false;
+        bc = GetComponent<BoxCollider2D>();
+    }
+
+    void Update()
+    {
+        if (triggered && pressed && Input.GetKeyUp(keyCode))
+        {
+            pressed = false; // detects if key was released
+            //Debug.Log("MID FAILED");
+            startRing.AddComponent<FakeStartRing>();
+            startRing.GetComponent<FakeStartRing>().Initialize(spawnerPos, hitboxPos, beatsShownInAdvance);
+            gameObject.GetComponent<Image>().color = Color.black;
+            startRing.GetComponent<Image>().color = Color.black;
+            endRing.GetComponent<Image>().color = Color.black;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-
+        triggered = true;
+        if (realStartRing.GetComponent<StartHold>() != null)
+        {
+            if (realStartRing.GetComponent<StartHold>().passed)
+            {
+                pressed = Input.GetKey(keyCode);
+            }
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-
+        triggered = false;
+        passed = pressed;
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         float halfwayPoint = (endRing.transform.localPosition.y + startRing.transform.localPosition.y) / 2f;
         transform.localPosition = new Vector3(endRing.transform.localPosition.x, halfwayPoint, 0f);
         rt.sizeDelta = new Vector2(endRing.GetComponent<RectTransform>().sizeDelta.x, endRing.GetComponent<RectTransform>().sizeDelta.y + endRing.transform.localPosition.y - startRing.transform.localPosition.y);
-        Debug.Log("POSITION: " + rt.position + "\nDELTA: " + rt.sizeDelta);
-        //if (move)
-        //{
-        //    songPosInBeats = Convert.ToSingle(FindObjectOfType<GameManager>().timer * 1000);
-        //    transform.position = Vector3.Lerp(spawnerPos, new Vector3(spawnerPos.x, hitboxPos.y - (spawnerPos.y - hitboxPos.y), spawnerPos.z), (beatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / (beatsShownInAdvance * 2));
-        //}
+        Vector2 realSizeDelta = new Vector2(rt.sizeDelta.x, endRing.GetComponent<RectTransform>().sizeDelta.y + endRing.transform.localPosition.y - realStartRing.transform.localPosition.y);
+        bc.size = new Vector2(realSizeDelta.x, realSizeDelta.y - 2*endRing.GetComponent<RectTransform>().sizeDelta.y);
+        bc.offset = new Vector2(0, (realStartRing.transform.localPosition.y - startRing.transform.localPosition.y)/2);
+    }
+
+    public void Initialize(Vector3 spawner, Vector3 hitbox, int offset, float scrollDelay, KeyCode key, GameObject startRing, GameObject endRing)
+    {
+        spawnerPos = spawner;
+        hitboxPos = hitbox;
+        beatOfThisNote = Convert.ToSingle(offset);
+        beatsShownInAdvance = scrollDelay;
+        keyCode = key;
+        this.startRing = startRing;
+        this.realStartRing = startRing;
+        this.endRing = endRing;
+        transform.localScale = new Vector3(startRing.transform.localScale.x, 1f, 1f);
     }
 }

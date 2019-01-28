@@ -70,4 +70,13 @@ public class Ring : MonoBehaviour
         songPosInBeats = Convert.ToSingle(FindObjectOfType<GameManager>().timer * 1000);
         transform.position = Vector3.Lerp(spawnerPos, new Vector3(spawnerPos.x, hitboxPos.y-(spawnerPos.y - hitboxPos.y), spawnerPos.z), (beatsShownInAdvance - (beatOfThisNote - songPosInBeats))/(beatsShownInAdvance*2));
     }
+
+    public void Initialize(Vector3 spawner, Vector3 hitbox, int offset, float scrollDelay, KeyCode key)
+    {
+        spawnerPos = spawner;
+        hitboxPos = hitbox;
+        beatOfThisNote = Convert.ToSingle(offset);
+        beatsShownInAdvance = scrollDelay;
+        keyCode = key;
+    }
 }
