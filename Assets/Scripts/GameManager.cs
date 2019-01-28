@@ -288,196 +288,44 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void spawnLeftBigRing(HitObject hitObject, KeyCode key)
+    void spawnStepNote(GameObject ring, Transform spawner, HitObject hitObject, KeyCode key)
     {
-        var currentRing = Instantiate(leftBigRing, leftSpawnerBig.position, leftSpawnerBig.rotation);
+        var currentRing = Instantiate(ring, spawner.position, spawner.rotation);
         currentRing.transform.SetParent(parentObject.transform);
-        currentRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
+        currentRing.transform.localScale = ring.transform.localScale;
         currentRing.AddComponent<Ring>();
-        currentRing.GetComponent<Ring>().spawnerPos = leftSpawnerBig.position;
+        currentRing.GetComponent<Ring>().spawnerPos = spawner.position;
         currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
         currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
         currentRing.GetComponent<Ring>().keyCode = key;
-        currentRing.tag = "rings";
+        if (hitObject.IsHold())
+        {
+            int offsetDiff = hitObject.getEndOffset() - hitObject.getOffset();
+            StopCoroutine(spawnStepHold(ring, spawner, hitObject, offsetDiff, key));
+            StartCoroutine(spawnStepHold(ring, spawner, hitObject, offsetDiff, key));
+        }
     }
 
-    void spawnLeftSmallRing(HitObject hitObject, KeyCode key)
-    {
-        var currentRing = Instantiate(leftSmallRing, leftSpawnerSmall.position, leftSpawnerSmall.rotation);
-        currentRing.transform.SetParent(parentObject.transform);
-        currentRing.transform.localScale = new Vector3(1.0f, 0.85f, 0);
-        currentRing.AddComponent<Ring>();
-        currentRing.GetComponent<Ring>().spawnerPos = leftSpawnerSmall.position;
-        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-        currentRing.GetComponent<Ring>().keyCode = key;
-        currentRing.tag = "rings";
-    }
-
-    void spawnRightBigRing(HitObject hitObject, KeyCode key)
-    {
-        var currentRing = Instantiate(rightBigRing, rightSpawnerBig.position, rightSpawnerBig.rotation);
-        currentRing.transform.SetParent(parentObject.transform);
-        currentRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
-        currentRing.AddComponent<Ring>();
-        currentRing.GetComponent<Ring>().spawnerPos = rightSpawnerBig.position;
-        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-        currentRing.GetComponent<Ring>().keyCode = key;
-        currentRing.tag = "rings";
-    }
-
-    void spawnRightSmallRing(HitObject hitObject, KeyCode key)
-    {
-        var currentRing = Instantiate(rightSmallRing, rightSpawnerSmall.position, rightSpawnerSmall.rotation);
-        currentRing.transform.SetParent(parentObject.transform);
-        currentRing.transform.localScale = new Vector3(1.0f, 0.85f, 0);
-        currentRing.AddComponent<Ring>();
-        currentRing.GetComponent<Ring>().spawnerPos = rightSpawnerSmall.position;
-        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-        currentRing.GetComponent<Ring>().keyCode = key;
-        currentRing.tag = "rings";
-    }
-
-    void spawnLeftBigMine(HitObject hitObject, KeyCode key)
-    {
-        var currentRing = Instantiate(leftBigMine, leftSpawnerBig.position, leftSpawnerBig.rotation);
-        currentRing.transform.SetParent(parentObject.transform);
-        currentRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
-        currentRing.AddComponent<Ring>();
-        currentRing.GetComponent<Ring>().spawnerPos = leftSpawnerBig.position;
-        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-        currentRing.GetComponent<Ring>().keyCode = key;
-        currentRing.tag = "rings";
-    }
-
-    void spawnLeftSmallMine(HitObject hitObject, KeyCode key)
-    {
-        var currentRing = Instantiate(leftSmallMine, leftSpawnerSmall.position, leftSpawnerSmall.rotation);
-        currentRing.transform.SetParent(parentObject.transform);
-        currentRing.transform.localScale = new Vector3(1.0f, 0.85f, 0);
-        currentRing.AddComponent<Ring>();
-        currentRing.GetComponent<Ring>().spawnerPos = leftSpawnerSmall.position;
-        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-        currentRing.GetComponent<Ring>().keyCode = key;
-        currentRing.tag = "rings";
-    }
-
-    void spawnRightBigMine(HitObject hitObject, KeyCode key)
-    {
-        var currentRing = Instantiate(rightBigMine, rightSpawnerBig.position, rightSpawnerBig.rotation);
-        currentRing.transform.SetParent(parentObject.transform);
-        currentRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
-        currentRing.AddComponent<Ring>();
-        currentRing.GetComponent<Ring>().spawnerPos = rightSpawnerBig.position;
-        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-        currentRing.GetComponent<Ring>().keyCode = key;
-        currentRing.tag = "rings";
-    }
-
-    void spawnRightSmallMine(HitObject hitObject, KeyCode key)
-    {
-        var currentRing = Instantiate(rightSmallMine, rightSpawnerSmall.position, rightSpawnerSmall.rotation);
-        currentRing.transform.SetParent(parentObject.transform);
-        currentRing.transform.localScale = new Vector3(1.0f, 0.85f, 0);
-        currentRing.AddComponent<Ring>();
-        currentRing.GetComponent<Ring>().spawnerPos = rightSpawnerSmall.position;
-        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-        currentRing.GetComponent<Ring>().keyCode = key;
-        currentRing.tag = "rings";
-    }
-
-    IEnumerator spawnHoldNote(Transform spawner, HitObject hitObject, int offsetDiff, KeyCode key)
+    IEnumerator spawnStepHold(GameObject ring, Transform spawner, HitObject hitObject, int offsetDiff, KeyCode key)
     {
         Debug.Log("Insantiated at: " + AudioSettings.dspTime * 1000);
-        var endRing = Instantiate(leftBigRing, leftSpawnerBig.position, leftSpawnerBig.rotation);
+        var endRing = Instantiate(ring, spawner.position, spawner.rotation);
         endRing.transform.SetParent(parentObject.transform);
-        endRing.transform.localScale = new Vector3(1.5f, 0.85f, 0);
+        endRing.transform.localScale = ring.transform.localScale;
         yield return new WaitForSecondsRealtime(offsetDiff / 1000f);
         Debug.Log("Moving at: " + AudioSettings.dspTime * 1000);
         endRing.AddComponent<Ring>();
-        endRing.GetComponent<Ring>().spawnerPos = leftSpawnerBig.position;
+        endRing.GetComponent<Ring>().spawnerPos = spawner.position;
         endRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
         endRing.GetComponent<Ring>().beatOfThisNote = hitObject.getEndOffset();
         endRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
         endRing.GetComponent<Ring>().keyCode = key;
-
     }
 
-    void spawnLeftBigHold(HitObject hitObject, KeyCode key)
+    void spawnMemoryNote(GameObject ring, Transform spawner, HitObject hitObject, KeyCode key)
     {
-        int offsetDiff = hitObject.getEndOffset() - hitObject.getOffset();
-        var currentRing = Instantiate(leftBigRing, leftSpawnerBig.position, leftSpawnerBig.rotation);
-        currentRing.transform.SetParent(parentObject.transform);
-        currentRing.transform.localScale = new Vector3(1.5f, 0.85f, 0);
-        currentRing.AddComponent<Ring>();
-        currentRing.GetComponent<Ring>().spawnerPos = leftSpawnerBig.position;
-        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-        currentRing.GetComponent<Ring>().keyCode = key;
-        StopCoroutine(spawnHoldNote(leftSpawnerBig, hitObject, offsetDiff, key));
-        StartCoroutine(spawnHoldNote(leftSpawnerBig, hitObject, offsetDiff, key));
-    }
-
-    void spawnLeftSmallHold(HitObject hitObject, KeyCode key)
-    {
-        var currentRing = Instantiate(leftSmallMine, leftSpawnerSmall.position, leftSpawnerSmall.rotation);
-        currentRing.transform.SetParent(parentObject.transform);
-        currentRing.transform.localScale = new Vector3(1.0f, 0.85f, 0);
-        currentRing.AddComponent<Ring>();
-        currentRing.GetComponent<Ring>().spawnerPos = leftSpawnerSmall.position;
-        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-        currentRing.GetComponent<Ring>().keyCode = key;
-        currentRing.tag = "rings";
-    }
-
-    void spawnRightBigHold(HitObject hitObject, KeyCode key)
-    {
-        var currentRing = Instantiate(rightBigMine, rightSpawnerBig.position, rightSpawnerBig.rotation);
-        currentRing.transform.SetParent(parentObject.transform);
-        currentRing.transform.localScale = new Vector3(1.15f, 0.85f, 0);
-        currentRing.AddComponent<Ring>();
-        currentRing.GetComponent<Ring>().spawnerPos = rightSpawnerBig.position;
-        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-        currentRing.GetComponent<Ring>().keyCode = key;
-        currentRing.tag = "rings";
-    }
-
-    void spawnRightSmallHold(HitObject hitObject, KeyCode key)
-    {
-        var currentRing = Instantiate(rightSmallMine, rightSpawnerSmall.position, rightSpawnerSmall.rotation);
-        currentRing.transform.SetParent(parentObject.transform);
-        currentRing.transform.localScale = new Vector3(1.0f, 0.85f, 0);
-        currentRing.AddComponent<Ring>();
-        currentRing.GetComponent<Ring>().spawnerPos = rightSpawnerSmall.position;
-        currentRing.GetComponent<Ring>().hitboxPos = hitbox.transform.position;
-        currentRing.GetComponent<Ring>().beatOfThisNote = hitObject.getOffset();
-        currentRing.GetComponent<Ring>().beatsShownInAdvance = scrollDelay;
-        currentRing.GetComponent<Ring>().keyCode = key;
-        currentRing.tag = "rings";
-    }
-
-    void spawnDiamondRing(HitObject hitObject, KeyCode key)
-    {
-        var currentRing = Instantiate(diamondRing, new Vector3(-10.24479f, 95.76189f, -0.1007616f), Quaternion.identity);
+        var currentRing = Instantiate(ring, spawner.localPosition, Quaternion.identity);
         currentRing.transform.SetParent(parentDiamond.transform, false);
         currentRing.GetComponent<DiamondRing>().hitboxScale = hitboxDiamond.transform.localScale;
         currentRing.GetComponent<DiamondRing>().beatOfThisNote = hitObject.getOffset();
@@ -487,70 +335,68 @@ public class GameManager : MonoBehaviour
 
     public void spawnNotes(HitObject hitObject)
     {
-        if (hitObject.getX() == 64) // LEFT
+        switch(hitObject.getX())
         {
-            if (memoryMode) // Currently in a memory timing section
-            {
-                spawnDiamondRing(hitObject, keyLeft);
-            }
-            else if (hitObject.IsMine())
-            {
-                spawnLeftBigMine(hitObject, keyLeft);
-            }
-            else if(hitObject.IsHold())
-            {
-                spawnLeftBigHold(hitObject, keyLeft);
-            }
-            else
-            {
-                spawnLeftBigRing(hitObject, keyLeft);
-            }
+            case 64:   // LEFT
+                if (memoryMode) // Currently in a memory timing section
+                {
+                    spawnMemoryNote(diamondRing, diamondRing.transform, hitObject, keyLeft);
+                }
+                else if (hitObject.IsMine())
+                {
+                    spawnStepNote(leftBigMine, leftSpawnerBig, hitObject, keyLeft);
+                }
+                else
+                {
+                    spawnStepNote(leftBigRing, leftSpawnerBig, hitObject, keyLeft);
+                }
+                break;
+            case 192:  // DOWN
+                if (memoryMode)
+                {
+                    spawnMemoryNote(diamondRing, diamondRing.transform, hitObject, keyDown);
+                }
+                else if (hitObject.IsMine())
+                {
+                    spawnStepNote(leftSmallMine, leftSpawnerSmall, hitObject, keyDown);
+                }
+                else
+                {
+                    spawnStepNote(leftSmallRing, leftSpawnerSmall, hitObject, keyDown);
+                }
+                break;
+            case 320:  // UP
+                if (memoryMode)
+                {
+                    spawnMemoryNote(diamondRing, diamondRing.transform, hitObject, keyUp);
+                }
+                else if (hitObject.IsMine())
+                {
+                    spawnStepNote(rightSmallMine, rightSpawnerSmall, hitObject, keyUp);
+                }
+                else
+                {
+                    spawnStepNote(rightSmallRing, rightSpawnerSmall, hitObject, keyUp);
+                }
+                break;
+            case 448:  // RIGHT
+                if (memoryMode)
+                {
+                    spawnMemoryNote(diamondRing, diamondRing.transform, hitObject, keyRight);
+                }
+                else if (hitObject.IsMine())
+                {
+                    spawnStepNote(rightBigMine, rightSpawnerBig, hitObject, keyRight);
+                }
+                else
+                {
+                    spawnStepNote(rightBigRing, rightSpawnerBig, hitObject, keyRight);
+                }
+                break;
+            default:
+                break;
         }
-        else if (hitObject.getX() == 192) // DOWN
-        {
-            if (memoryMode)
-            {
-                spawnDiamondRing(hitObject, keyDown);
-            }
-            else if (hitObject.IsMine())
-            {
-                spawnLeftSmallMine(hitObject, keyDown);
-            }
-            else
-            {
-                spawnLeftSmallRing(hitObject, keyDown);
-            }
-        }
-        else if (hitObject.getX() == 320) // UP
-        {
-            if (memoryMode)
-            {
-                spawnDiamondRing(hitObject, keyUp);
-            }
-            else if (hitObject.IsMine())
-            {
-                spawnRightSmallMine(hitObject, keyUp);
-            }
-            else
-            {
-                spawnRightSmallRing(hitObject, keyUp);
-            }
-        }
-        else if (hitObject.getX() == 448) // RIGHT
-        {
-            if (memoryMode)
-            {
-                spawnDiamondRing(hitObject, keyRight);
-            }
-            else if (hitObject.IsMine())
-            {
-                spawnRightBigMine(hitObject, keyRight);
-            }
-            else
-            {
-                spawnRightBigRing(hitObject, keyRight);
-            }
-        }
+        
     }
 
 }
