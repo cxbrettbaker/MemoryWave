@@ -147,7 +147,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.4875, y: 0.6716667}
   m_AnchorMax: {x: 0.4875, y: 0.6716667}
-  m_AnchoredPosition: {x: 10.9, y: -99.9}
+  m_AnchoredPosition: {x: 10.900391, y: -99.90625}
   m_SizeDelta: {x: 109.2, y: 20.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2153477
@@ -808,7 +808,7 @@ GameObject:
   - component: {fileID: 538497724}
   m_Layer: 0
   m_Name: diamondHitbox
-  m_TagString: normalHitbox
+  m_TagString: normalDiamondHitbox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -966,7 +966,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.4875, y: 0.6716667}
   m_AnchorMax: {x: 0.4875, y: 0.6716667}
-  m_AnchoredPosition: {x: 6.6, y: -105.9}
+  m_AnchoredPosition: {x: 6.5996094, y: -105.90625}
   m_SizeDelta: {x: 109.2, y: 20.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &609187242
@@ -1088,7 +1088,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.25375, y: 0.28666672}
   m_AnchorMax: {x: 0.7462501, y: 1}
-  m_AnchoredPosition: {x: 15, y: -123.90001}
+  m_AnchoredPosition: {x: 15, y: -123.875}
   m_SizeDelta: {x: 351.6, y: 127.9}
   m_Pivot: {x: 0.50000006, y: 0.50000006}
 --- !u!114 &729575736
@@ -1285,7 +1285,7 @@ GameObject:
   - component: {fileID: 978468464}
   m_Layer: 0
   m_Name: diamondDespawner
-  m_TagString: despawner
+  m_TagString: despawnerDiamond
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1635,10 +1635,10 @@ MonoBehaviour:
     type: 3}
   parentDiamond: {fileID: 1493073377}
   hitboxDiamond: {fileID: 538497721}
-  keyLeft: 276
-  keyDown: 274
-  keyUp: 273
-  keyRight: 275
+  keyLeft: 113
+  keyDown: 119
+  keyUp: 111
+  keyRight: 112
 --- !u!4 &1047737264
 Transform:
   m_ObjectHideFlags: 0
@@ -2451,7 +2451,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.25375, y: 0.28666672}
   m_AnchorMax: {x: 0.7462501, y: 1}
-  m_AnchoredPosition: {x: 15, y: -123.90001}
+  m_AnchoredPosition: {x: 15, y: -123.875}
   m_SizeDelta: {x: 351.6, y: 127.9}
   m_Pivot: {x: 0.50000006, y: 0.50000006}
 --- !u!114 &1493073379
@@ -3150,7 +3150,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.4875, y: 0.6716667}
   m_AnchorMax: {x: 0.4875, y: 0.6716667}
-  m_AnchoredPosition: {x: 11.2, y: -112.6}
+  m_AnchoredPosition: {x: 11.200195, y: -112.59375}
   m_SizeDelta: {x: 109.2, y: 20.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1720272161
