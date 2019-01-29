@@ -233,8 +233,10 @@ public class GameManager : MonoBehaviour
             var currentRing = Instantiate(ring, spawner.position, spawner.rotation);
             currentRing.transform.SetParent(parentObject.transform);
             currentRing.transform.localScale = ring.transform.localScale;
-            currentRing.AddComponent<Ring>();
-            currentRing.GetComponent<Ring>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key);
+            if (hitObject.IsMine())
+                currentRing.AddComponent<Mine>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key);
+            else
+                currentRing.AddComponent<Ring>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key);
         }
 
     }
