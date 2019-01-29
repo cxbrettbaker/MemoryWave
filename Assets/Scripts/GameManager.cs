@@ -60,6 +60,7 @@ public class GameManager : MonoBehaviour
     public GameObject hitbox;
     public GameObject midRing;
     public bool memoryMode;
+    public bool invertedMemoryMode;
     public GameObject diamondRing;
     public GameObject parentDiamond;
     public GameObject hitboxDiamond;
@@ -71,12 +72,13 @@ public class GameManager : MonoBehaviour
     public KeyCode keyRight;
 
     public Queue<HitEvent> currentMemorySequence;
-    public bool startOfMemorySequence;
     public GameObject spriteLeftBig;
     public GameObject spriteLeftSmall;
     public GameObject spriteRightSmall;
     public GameObject spriteRightBig;
     Color[] colorArray;
+    public GameObject memoryFlash;
+    public GameObject invertedMemoryFlash;
 
     void loadLevel()
     {
@@ -106,7 +108,6 @@ public class GameManager : MonoBehaviour
         memoryBaseScore = 100;
         noteBaseScore = 10;
         timeBuffer = 3000; // TODO: change this to adapt to the song
-        startOfMemorySequence = true;
 
         // Set the default color sprite order in case HitEvent contains no colorArray information
         colorArray = new Color[4];
@@ -172,15 +173,23 @@ public class GameManager : MonoBehaviour
             if (timingIndex < timingPointsList.Count && offsetTime >= timingPointsList[timingIndex].getOffset())
             {
                 scrollDelay = delayHandler.GetComponent<DelayHandler>().UpdateBPM(timingPointsList[timingIndex].getMsPerBeat());
-                if (timingPointsList[timingIndex].getPlaymode() == 0) //note mode
+                if (timingPointsList[timingIndex].getPlaymode() == 0) // step
                 {
                     baseScore = noteBaseScore;
                     memoryMode = false;
+                    invertedMemoryMode = false;
                 }
-                else
+                else if (timingPointsList[timingIndex].getPlaymode() == 1) // memory
                 {
                     baseScore = memoryBaseScore;
                     memoryMode = true;
+                    invertedMemoryMode = false;
+                }
+                else if (timingPointsList[timingIndex].getPlaymode() == -1) // inverted memory
+                {
+                    baseScore = memoryBaseScore;
+                    memoryMode = false;
+                    invertedMemoryMode = true;
                 }
                 timingIndex++;
             }
@@ -200,7 +209,8 @@ public class GameManager : MonoBehaviour
                 if (hitObject.isFlashYellow() || hitObject.isFlashGreen() || hitObject.isFlashRed() || hitObject.isFlashBlue())
                 {
                     HitEvent memoryNote = new HitEvent();
-                    memoryNote.setSequenceStart(startOfMemorySequence);
+                    bool isQueueEmpty = currentMemorySequence.Count == 0 ? true:false;
+                    memoryNote.setSequenceStart(isQueueEmpty);
                     if (hitObject.isFlashYellow())
                     {
                         StartCoroutine(FlashMemoryPrompt("yellow", hitObject.IsflashBlack()));
@@ -225,18 +235,22 @@ public class GameManager : MonoBehaviour
                         memoryNote.setKey("3");
                         currentMemorySequence.Enqueue(memoryNote);
                     }
-                    startOfMemorySequence = false;
                 }
-                else
-                {
-                    startOfMemorySequence = true;
-                }
+
 
                 if (index + 1 < hitEventsList.Count)
                 {
+
                     HitEvent nextHitObject = hitEventsList[index + 1];
-                    StopCoroutine(HandleMemorySprites(hitObject, FetchNextNoteInfo(nextHitObject)));
-                    StartCoroutine(HandleMemorySprites(hitObject, FetchNextNoteInfo(nextHitObject)));
+                    int nextHitMode = FetchNextNoteInfo(nextHitObject);
+                    // Check if the next note is a memory input corresponding to the start of memory sequence
+                    if (nextHitMode != 0 && nextHitObject.IsNote() && currentMemorySequence.Peek().isSequenceStart())
+                    {
+                        StopCoroutine(HandleMemoryStart(nextHitObject, nextHitMode));
+                        StartCoroutine(HandleMemoryStart(nextHitObject, nextHitMode));
+                    }
+                    StopCoroutine(HandleMemorySprites(hitObject, FetchNextNoteInfo(hitObject)));
+                    StartCoroutine(HandleMemorySprites(hitObject, FetchNextNoteInfo(hitObject)));
                 }
             }
             else // if next hit object doesn't need to be spawned now
@@ -265,54 +279,126 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    IEnumerator HandleMemoryStart(HitEvent nextHitObject, int playMode)
+    {
+        //Debug.Log("CALLED: START");
+        //if (nextHitObject.getColorArray().Length == 4) // Next hit event contains colorArray information
+        //{
+        //    colorArray = nextHitObject.getColorArray();
+        //}
+
+        //// Handle drawing of drum sprites
+        //LeanTween.value(spriteLeftBig, spriteLeftBig.GetComponent<Image>().color, colorArray[0], scrollDelay / 4000f) // quarter of scrollDelay
+        //    .setOnUpdate((Color color) =>
+        //    {
+        //        spriteLeftBig.GetComponent<Image>().color = color;
+        //    });
+        //LeanTween.value(spriteLeftSmall, spriteLeftSmall.GetComponent<Image>().color, colorArray[1], scrollDelay / 4000f)
+        //    .setOnUpdate((Color color) =>
+        //    {
+        //        spriteLeftSmall.GetComponent<Image>().color = color;
+        //    });
+        //LeanTween.value(spriteRightSmall, spriteRightSmall.GetComponent<Image>().color, colorArray[2], scrollDelay / 4000f)
+        //    .setOnUpdate((Color color) =>
+        //    {
+        //        spriteRightSmall.GetComponent<Image>().color = color;
+        //    });
+        //LeanTween.value(spriteRightBig, spriteRightBig.GetComponent<Image>().color, colorArray[3], scrollDelay / 4000f)
+        //    .setOnUpdate((Color color) =>
+        //    {
+        //        spriteRightBig.GetComponent<Image>().color = color;
+        //    });
+
+        yield return new WaitForSecondsRealtime(scrollDelay / 2000f); // half of scrollDelay
+
+        // Handle memory prompt
+        if (playMode == 1)
+        {
+            LeanTween.value(memoryFlash, Color.clear, Color.white, scrollDelay / 8000f) // eighth of scrollDelay
+                .setOnUpdate((Color color) =>
+                {
+                    memoryFlash.GetComponent<Image>().color = color;
+                });
+
+            LeanTween.value(memoryFlash, Color.white, Color.clear, scrollDelay / 8000f)
+                .setDelay(scrollDelay / 8000f)
+                .setOnUpdate((Color color) =>
+                {
+                    memoryFlash.GetComponent<Image>().color = color;
+                });
+        }
+
+        // Handle inverted memory prompt
+        else if (playMode == -1)
+        {
+            LeanTween.value(invertedMemoryFlash, Color.clear, Color.white, scrollDelay / 8000f)
+                .setOnUpdate((Color color) =>
+                {
+                    invertedMemoryFlash.GetComponent<Image>().color = color;
+                });
+
+            LeanTween.value(invertedMemoryFlash, Color.white, Color.clear, scrollDelay / 8000f)
+                .setDelay(scrollDelay / 8000f)
+                .setOnUpdate((Color color) =>
+                {
+                    invertedMemoryFlash.GetComponent<Image>().color = color;
+                });
+        }
+
+       
+    }
+
     IEnumerator HandleMemorySprites(HitEvent nextHitObject, int playMode)
     {
         if (nextHitObject.getColorArray().Length == 4) // Next hit event contains colorArray information
         {
             colorArray = nextHitObject.getColorArray();
         }
-        yield return new WaitForSecondsRealtime(scrollDelay / 1000f);
         if ((playMode == 1 || playMode == -1) && nextHitObject.IsNote()) // Memory or inverted memory note, draw sprites
         {
-            LeanTween.value(spriteLeftBig, spriteLeftBig.GetComponent<Image>().color, colorArray[0], 0.05f)
+            LeanTween.value(spriteLeftBig, spriteLeftBig.GetComponent<Image>().color, colorArray[0], scrollDelay / 20000f) // 1/20th of scrollDelay
                 .setOnUpdate((Color color) =>
                 {
                     spriteLeftBig.GetComponent<Image>().color = color;
                 });
-            LeanTween.value(spriteLeftSmall, spriteLeftSmall.GetComponent<Image>().color, colorArray[1], 0.05f)
+            LeanTween.value(spriteLeftSmall, spriteLeftSmall.GetComponent<Image>().color, colorArray[1], scrollDelay / 20000f)
                 .setOnUpdate((Color color) =>
                 {
                     spriteLeftSmall.GetComponent<Image>().color = color;
                 });
-            LeanTween.value(spriteRightSmall, spriteRightSmall.GetComponent<Image>().color, colorArray[2], 0.05f)
+            LeanTween.value(spriteRightSmall, spriteRightSmall.GetComponent<Image>().color, colorArray[2], scrollDelay / 20000f)
                 .setOnUpdate((Color color) =>
                 {
                     spriteRightSmall.GetComponent<Image>().color = color;
                 });
-            LeanTween.value(spriteRightBig, spriteRightBig.GetComponent<Image>().color, colorArray[3], 0.05f)
+            LeanTween.value(spriteRightBig, spriteRightBig.GetComponent<Image>().color, colorArray[3], scrollDelay / 20000f)
                 .setOnUpdate((Color color) =>
                 {
                     spriteRightBig.GetComponent<Image>().color = color;
                 });
         }
-        else if (playMode == 0 || !nextHitObject.IsNote()) // Step note or no note, clear sprites
+        else if (playMode == 0) // Step note, clear sprites
         {
-            LeanTween.value(spriteLeftBig, spriteLeftBig.GetComponent<Image>().color, Color.clear, 0.1f)
+            LeanTween.value(spriteLeftBig, spriteLeftBig.GetComponent<Image>().color, Color.clear, scrollDelay / 10000f) // 1/10th of scrollDelay
+                .setDelay(scrollDelay / 10000f)
                 .setOnUpdate((Color color) =>
                 {
                     spriteLeftBig.GetComponent<Image>().color = color;
                 });
-            LeanTween.value(spriteLeftSmall, spriteLeftSmall.GetComponent<Image>().color, Color.clear, 0.1f)
+            LeanTween.value(spriteLeftSmall, spriteLeftSmall.GetComponent<Image>().color, Color.clear, scrollDelay / 10000f)
+                .setDelay(scrollDelay / 10000f)
                 .setOnUpdate((Color color) =>
                 {
                     spriteLeftSmall.GetComponent<Image>().color = color;
                 });
-            LeanTween.value(spriteRightSmall, spriteRightSmall.GetComponent<Image>().color, Color.clear, 0.1f)
+            LeanTween.value(spriteRightSmall, spriteRightSmall.GetComponent<Image>().color, Color.clear, scrollDelay / 10000f)
+                .setDelay(scrollDelay / 10000f)
                 .setOnUpdate((Color color) =>
                 {
                     spriteRightSmall.GetComponent<Image>().color = color;
                 });
-            LeanTween.value(spriteRightBig, spriteRightBig.GetComponent<Image>().color, Color.clear, 0.1f)
+            LeanTween.value(spriteRightBig, spriteRightBig.GetComponent<Image>().color, Color.clear, scrollDelay / 10000f)
+                .setDelay(scrollDelay / 10000f)
                 .setOnUpdate((Color color) =>
                 {
                     spriteRightBig.GetComponent<Image>().color = color;
@@ -322,6 +408,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Error: Invalid playMode - returned " + playMode);
         }
+        yield return null;
     }
 
     IEnumerator FlashMemoryPrompt(string color, bool isBlack)
@@ -393,10 +480,6 @@ public class GameManager : MonoBehaviour
         if (currentMemorySequence.Count > 0)
         {
             HitEvent memNote = currentMemorySequence.Dequeue();
-            if (memNote.isSequenceStart())
-            {
-                Debug.Log("START OF SEQUENCE");
-            }
             var currentRing = Instantiate(ring, spawner.localPosition, Quaternion.identity);
             currentRing.transform.SetParent(parentDiamond.transform, false);
             currentRing.GetComponent<DiamondRing>().hitboxScale = hitboxDiamond.transform.localScale;
@@ -428,7 +511,7 @@ public class GameManager : MonoBehaviour
         switch(hitObject.getKey())
         {
             case 0:   // LEFT
-                if (memoryMode) // Currently in a memory timing section
+                if (memoryMode || invertedMemoryMode) // Currently in a memory timing section
                 {
                     spawnMemoryNote(diamondRing, diamondRing.transform, hitObject, keyLeft);
                 }
@@ -442,7 +525,7 @@ public class GameManager : MonoBehaviour
                 }
                 break;
             case 1:  // DOWN
-                if (memoryMode)
+                if (memoryMode || invertedMemoryMode)
                 {
                     spawnMemoryNote(diamondRing, diamondRing.transform, hitObject, keyDown);
                 }
@@ -456,7 +539,7 @@ public class GameManager : MonoBehaviour
                 }
                 break;
             case 2:  // UP
-                if (memoryMode)
+                if (memoryMode || invertedMemoryMode)
                 {
                     spawnMemoryNote(diamondRing, diamondRing.transform, hitObject, keyUp);
                 }
@@ -470,7 +553,7 @@ public class GameManager : MonoBehaviour
                 }
                 break;
             case 3:  // RIGHT
-                if (memoryMode)
+                if (memoryMode || invertedMemoryMode)
                 {
                     spawnMemoryNote(diamondRing, diamondRing.transform, hitObject, keyRight);
                 }
