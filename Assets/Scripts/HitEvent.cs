@@ -9,6 +9,8 @@ public class HitEvent
     private int key;
     private int offset;
     private int endOffset;
+    private Color[] colorArray = new Color[1];
+    private bool sequenceStart;
 
     private bool isNote; //true for note
     private bool isMine;
@@ -78,6 +80,16 @@ public class HitEvent
         return flashBlack;
     }
 
+    public bool isSequenceStart()
+    {
+        return sequenceStart;
+    }
+
+    public Color[] getColorArray()
+    {
+        return colorArray;
+    }
+
     /************************
      * setters
      ***********************/
@@ -132,5 +144,42 @@ public class HitEvent
         isHold = readBit(Convert.ToInt32(input), 7);
     }
 
+    public void setColorArray(string input)
+    {
+        String[] colors = input.Split(':');
+        if (colors.Length > 1)
+        {
+            colorArray = new Color[4];
+            for (int i = 0; i < 4; i++)
+            {
+                switch (colors[i])
+                {
+                    case "0":
+                        colorArray[i] = Color.yellow;
+                        break;
+                    case "1":
+                        colorArray[i] = Color.green;
+                        break;
+                    case "2":
+                        colorArray[i] = Color.red;
+                        break;
+                    case "3":
+                        colorArray[i] = Color.blue;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        else // input is actually for endOffset
+        {
+            setEndOffset(input);
+        }
+    }
+
+    public void setSequenceStart(bool input)
+    {
+        sequenceStart = input;
+    }
 
 }

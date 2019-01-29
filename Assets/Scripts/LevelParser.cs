@@ -187,7 +187,7 @@ public class LevelParser : MonoBehaviour
             songInfo["MaxBpm"] = (maxBpm/1000f*60f).ToString();
 
             int mapLength = endOffset - startOffset;
-            songInfo["MapLength"] = ((mapLength / 1000) / 60).ToString() + ":" + ((mapLength % 1000) % 60);
+            songInfo["MapLength"] = ((mapLength / 1000) / 60).ToString() + ":" + ((mapLength / 1000) % 60);
 
             songInfo["MemorySegments"] = memSegs.ToString();
 
@@ -242,7 +242,16 @@ public class LevelParser : MonoBehaviour
                 hitEvents.setColour(tmp[2]);
                 hitEvents.setFlashBlack(tmp[2]);
                 hitEvents.setIsHold(tmp[2]);
-                hitEvents.setEndOffset(tmp[3]);
+                if (tmp.Length < 5)
+                {
+                    if (tmp.Length == 4)
+                        hitEvents.setColorArray(tmp[3]);
+                }
+                else
+                {
+                    hitEvents.setEndOffset(tmp[3]);
+                    hitEvents.setColorArray(tmp[4]);
+                }
                 GameManager.Instance.hitEventsList.Add(hitEvents);
             }
 

@@ -1,6 +1,6 @@
 TODO:
 
-Memory inputs should overlay a sprite of which note is which over the drums, this can be rotated with an added field in memory tming points
+Memory inputs should overlay a sprite of which note is which over the drums, this can be rotated with an added field in hitevents
 Visualizer
 Score implementation (star hitmarker - blue 50,  green 100, yellow 300 (glow effect))
 Brief song volume fade out on combo break - loud miss sound
@@ -8,3 +8,13 @@ HP implementation
 Memory prompts need to scale with scrollDelay
 
 Particle clouds in the background that change color in time with the BPM, color derived from something like ColorChord.
+
+
+
+
+when flashing prompt: 
+add new hitObject to Queue
+
+when spawning diamonds:
+TRY to pull from queue
+check if queue empty

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-public class NoteScroller : MonoBehaviour
+public class DelayHandler : MonoBehaviour
 {
     public Transform hitbox;
     public Transform spawner;
