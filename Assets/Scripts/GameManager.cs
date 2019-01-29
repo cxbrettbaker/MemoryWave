@@ -80,6 +80,7 @@ public class GameManager : MonoBehaviour
     int[] colorIntArray;
     public GameObject memoryFlash;
     public GameObject invertedMemoryFlash;
+    bool isSequenceStart;
 
     void loadLevel()
     {
@@ -109,6 +110,7 @@ public class GameManager : MonoBehaviour
         memoryBaseScore = 100;
         noteBaseScore = 10;
         timeBuffer = 3000; // TODO: change this to adapt to the song
+        isSequenceStart = true;
 
         // Set the default color sprite order in case HitEvent contains no colorArray information
         colorArray = new Color[4];
@@ -215,8 +217,9 @@ public class GameManager : MonoBehaviour
                 if (hitObject.isFlashYellow() || hitObject.isFlashGreen() || hitObject.isFlashRed() || hitObject.isFlashBlue())
                 {
                     HitEvent memoryNote = new HitEvent();
-                    bool isQueueEmpty = currentMemorySequence.Count == 0 ? true:false;
-                    memoryNote.setSequenceStart(isQueueEmpty);
+                    memoryNote.setSequenceStart(isSequenceStart);
+                    if (isSequenceStart)
+                        Debug.Log("START " + hitObject.getOffset());
                     if (hitObject.isFlashYellow())
                     {
                         StartCoroutine(FlashMemoryPrompt("yellow", hitObject.IsflashBlack()));
@@ -241,6 +244,11 @@ public class GameManager : MonoBehaviour
                         memoryNote.setKey("3");
                         currentMemorySequence.Enqueue(memoryNote);
                     }
+                    isSequenceStart = false;
+                }
+                else
+                {
+                    isSequenceStart = true;
                 }
 
 
@@ -381,10 +389,6 @@ public class GameManager : MonoBehaviour
                 {
                     spriteRightBig.GetComponent<Image>().color = color;
                 });
-        }
-        else
-        {
-            Debug.Log("Error: Invalid playMode - returned " + playMode);
         }
         yield return null;
     }

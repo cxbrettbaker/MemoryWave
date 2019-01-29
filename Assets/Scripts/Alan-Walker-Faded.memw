@@ -10,11 +10,26 @@ Memory prompts need to scale with scrollDelay
 Particle clouds in the background that change color in time with the BPM, color derived from something like ColorChord.
 
 
+186,3000,4,100,0
+3186,3000,4,100,1
+5853,3000,4,100,0
+8519,3000,4,100,-1
+11186,3000,4,100,0
 
 
-when flashing prompt: 
-add new hitObject to Queue
-
-when spawning diamonds:
-TRY to pull from queue
-check if queue empty
+0,519,4,1186		// FLASH BLUE
+0,1186,8			// FLASH RED
+0,1853,16			// FLASH GREEN
+2,2519,32			// FLASH YELLOW => PROMPT MEMORY
+0,3186,80,3853		// FLASH GREEN
+3,3853,1			// NOTE
+3,4519,5,2:3:0:1	// NOTE + FLASH BLUE
+1,5186,1			// NOTE
+0,5853,68			// FLASH BLUE + BLACK
+0,6519,72,1			// FLASH RED + BLACK
+0,7186,80,2			// FLASH GREEN + BLACK
+0,7853,96,3			// FLASH YELLOW + BLACK => PROMPT INVERTED
+1,8519,1			// NOTE => PROMPT INVERTED
+2,9186,1			// NOTE
+3,9853,1			// NOTE
+1,10519,1			// NOTE

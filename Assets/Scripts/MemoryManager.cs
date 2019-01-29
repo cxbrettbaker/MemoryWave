@@ -50,7 +50,7 @@ public class MemoryManager : MonoBehaviour
 	
 	// Play the audio upon button press
 	public void PlayAudio(int index) {
-	float length = 0.5f;
+	float length = GameManager.Instance.scrollDelay / 2000f;
 	float frequency = 0.001f * ((float)index + 1f);
 
 	AnimationCurve volumeCurve = new AnimationCurve(new Keyframe(0f, 1f, 0f, -1f), new Keyframe(length, 0f, -1f, 0f));
@@ -62,42 +62,25 @@ public class MemoryManager : MonoBehaviour
 
 	AudioClip audioClip = LeanAudio.createAudio(volumeCurve, frequencyCurve, audioOptions);
 
-	LeanAudio.play(audioClip, 0.5f);
+	LeanAudio.play(audioClip, length);
     }
 	
 	
 	// Call to show a BLEEP. 
 	public void Bleep (int index, bool isBlack) {
-        if (!isBlack)
-        {
-            LeanTween.value(gameButtons[index], buttonSettings[index].normalColor, buttonSettings[index].highlightColor, 0.25f)
-                .setOnUpdate((Color color) =>
-                {
-                    gameButtons[index].GetComponent<Image>().color = color;
-                });
 
-            LeanTween.value(gameButtons[index], buttonSettings[index].highlightColor, buttonSettings[index].normalColor, 0.25f)
-                .setDelay(0.5f)
-                .setOnUpdate((Color color) =>
-                {
-                    gameButtons[index].GetComponent<Image>().color = color;
-                });
-        }
-        else
-        {
-            LeanTween.value(gameButtons[index], buttonSettings[index].normalColor, buttonSettings[4].highlightColor, 0.25f)
-                .setOnUpdate((Color color) =>
-                {
-                    gameButtons[index].GetComponent<Image>().color = color;
-                });
+        LeanTween.value(gameButtons[index], buttonSettings[index].normalColor, isBlack ? buttonSettings[4].highlightColor : buttonSettings[index].highlightColor, GameManager.Instance.scrollDelay / 10000f)
+            .setOnUpdate((Color color) =>
+            {
+                gameButtons[index].GetComponent<Image>().color = color;
+            });
 
-            LeanTween.value(gameButtons[index], buttonSettings[4].highlightColor, buttonSettings[index].normalColor, 0.25f)
-                .setDelay(0.5f)
-                .setOnUpdate((Color color) =>
-                {
-                    gameButtons[index].GetComponent<Image>().color = color;
-                });
-        }
+        LeanTween.value(gameButtons[index], isBlack ? buttonSettings[4].highlightColor : buttonSettings[index].highlightColor, buttonSettings[index].normalColor, GameManager.Instance.scrollDelay / 10000f)
+            .setDelay(GameManager.Instance.scrollDelay / 4000f)
+            .setOnUpdate((Color color) =>
+            {
+                gameButtons[index].GetComponent<Image>().color = color;
+            });
 
         PlayAudio(index);
         
@@ -106,8 +89,6 @@ public class MemoryManager : MonoBehaviour
 	// Store the given color into the list of bleeps to be pressed. 
 	public void StoreBleep(int index, bool isBlack) {
 		Bleep(index, isBlack);
-		bleeps.Add(index);
-		bleepCount++;
     }
 
 

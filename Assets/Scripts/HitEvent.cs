@@ -134,10 +134,10 @@ public class HitEvent
     public void setColour(string input)
     {
         int num = Convert.ToInt32(input);
-        flashRed = readBit(num, 2);
-        flashBlue = readBit(num, 3);
-        flashYellow = readBit(num, 4);
-        flashGreen = readBit(num, 5);
+        flashBlue = readBit(num, 2);
+        flashRed = readBit(num, 3);
+        flashGreen = readBit(num, 4);
+        flashYellow = readBit(num, 5);
     }
 
     public void setFlashBlack(string input)
