@@ -38,7 +38,7 @@ public class EndHold : MonoBehaviour
             startHold.GetComponent<StartHold>().fakeStartRing.GetComponent<Image>().enabled = false;
         if (collision.tag == "despawner")
         {
-            GameManager.instance.NoteHit(goodHit);
+            GameManager.Instance.NoteHit(goodHit);
             Destroy(startHold.GetComponent<StartHold>().fakeStartRing);
             Destroy(startHold);
             Destroy(midHold);
@@ -55,12 +55,13 @@ public class EndHold : MonoBehaviour
     {
         if (passed)
         {
-            GameManager.instance.NoteHit(true);
+            GameManager.Instance.NoteHit(true);
         }
         else if(collision.tag == "normalHitbox")
         {
+            midHold.GetComponent<Image>().enabled = false;
             gameObject.GetComponent<Image>().color = Color.black;
-            GameManager.instance.NoteMissed();
+            GameManager.Instance.NoteMissed();
         }
     }
 

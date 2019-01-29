@@ -34,7 +34,7 @@ public class StartHold : MonoBehaviour
     {
         if (hit && Input.GetKeyDown(keyCode))
         {
-            GameManager.instance.NoteHit(goodHit);
+            GameManager.Instance.NoteHit(goodHit);
             gameObject.GetComponent<Image>().enabled = false;
             passed = true;
             CreateFake();
@@ -74,7 +74,7 @@ public class StartHold : MonoBehaviour
         {
             hit = false;
             goodHit = false;
-            GameManager.instance.NoteMissed();
+            GameManager.Instance.NoteMissed();
             if (!passed)
             {
                 //Debug.Log("START FAILED");

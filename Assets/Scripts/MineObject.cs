@@ -18,7 +18,7 @@ public class MineObject : MonoBehaviour
     {
         if (hit && Input.GetKeyDown(keyCode))
         {
-            GameManager.instance.NoteMissed();
+            GameManager.Instance.NoteMissed();
             Debug.Log("hit the mine");
             gameObject.SetActive(false);
         }
@@ -37,7 +37,7 @@ public class MineObject : MonoBehaviour
         if (collision.tag == "cats")
         {
             hit = false;
-            GameManager.instance.NoteHit(false);
+            GameManager.Instance.NoteHit(false);
         }
     }
 }

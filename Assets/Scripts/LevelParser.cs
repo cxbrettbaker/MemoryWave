@@ -7,9 +7,9 @@ using TMPro;
 using System;
 using UnityEngine.SceneManagement;
 
-public class SongSelectParser : MonoBehaviour
+public class LevelParser : MonoBehaviour
 {
-    public static SongSelectParser Instance;
+    public static LevelParser Instance;
 
     public ScrollRect scrollView;
     public GameObject scrollContent;
@@ -136,7 +136,7 @@ public class SongSelectParser : MonoBehaviour
             StreamReader file = new StreamReader(songMap);
             string line, prevLine = "";
             string[] parts;
-            bool readTimingPoints = false, readHitObject = false;
+            bool readTimingPoints = false, readHitEvents = false;
             int maxBpm = 0, startOffset = 0, memSegs = 0;
             while ((line = file.ReadLine()) != null)
             {
@@ -154,10 +154,10 @@ public class SongSelectParser : MonoBehaviour
                 {
                     readTimingPoints = true;
                 }
-                else if (line == "[HitObjects]")
+                else if (line == "[HitEvents]")
                 {
                     readTimingPoints = false;
-                    readHitObject = true;
+                    readHitEvents = true;
                 }
                 else if (readTimingPoints)
                 {
@@ -172,19 +172,19 @@ public class SongSelectParser : MonoBehaviour
                         memSegs++;
                     }
                 }
-                else if (readHitObject)
+                else if (readHitEvents)
                 {
                     parts = line.Split(',');
-                    Int32.TryParse(parts[2], out startOffset);
-                    readHitObject = false;
+                    Int32.TryParse(parts[1], out startOffset);
+                    readHitEvents = false;
                 }
                 prevLine = line;
 
             }
             parts = prevLine.Split(',');
-            Int32.TryParse(parts[2], out int endOffset);
+            Int32.TryParse(parts[1], out int endOffset);
 
-            songInfo["MaxBpm"] = maxBpm.ToString();
+            songInfo["MaxBpm"] = (maxBpm/1000f*60f).ToString();
 
             int mapLength = endOffset - startOffset;
             songInfo["MapLength"] = ((mapLength / 1000) / 60).ToString() + ":" + ((mapLength % 1000) % 60);
@@ -193,5 +193,66 @@ public class SongSelectParser : MonoBehaviour
 
             songs.Add(songInfo);
         }
+    }
+
+    public void ParseLevel(string filename)
+    {
+        // Read the file and display it line by line.  
+        string line;
+        bool timingPointsStart = false;
+        bool hitEventsStart = false;
+        string[] tmp;
+
+        System.IO.StreamReader file = new System.IO.StreamReader(filename);
+        while ((line = file.ReadLine()) != null)
+        {
+            System.Console.WriteLine(line);
+            line = line.Trim();
+            if (line.Length == 0 || line[0] == '/')
+            {
+                continue;
+            }
+
+            //Debug.Log(line);
+
+            if (line == "[TimingPoints]")
+            {
+                //Debug.Log("TimingPoints start");
+                hitEventsStart = false;
+                timingPointsStart = true;
+                continue;
+            }
+            if (line == "[HitEvents]")
+            {
+                //Debug.Log("hitobject start");
+                hitEventsStart = true;
+                timingPointsStart = false;
+                continue;
+            }
+
+            if (hitEventsStart)
+            {
+                //Debug.Log(line);
+                tmp = line.Split(',');
+                HitEvent hitEvents = new HitEvent();
+                hitEvents.setKey(tmp[0]);
+                hitEvents.setOffset(tmp[1]);
+                hitEvents.setIsNote(tmp[2]);
+                hitEvents.setIsMine(tmp[2]);
+                hitEvents.setColour(tmp[2]);
+                hitEvents.setFlashBlack(tmp[2]);
+                hitEvents.setIsHold(tmp[2]);
+                hitEvents.setEndOffset(tmp[3]);
+                GameManager.Instance.hitEventsList.Add(hitEvents);
+            }
+
+            if (timingPointsStart)
+            {
+                tmp = line.Split(',');
+                TimingPoints timingPoints = new TimingPoints(Convert.ToInt32(tmp[0]), Convert.ToSingle(tmp[1]), Convert.ToInt32(tmp[2]), Convert.ToInt32(tmp[3]), Convert.ToInt32(tmp[4]));
+                GameManager.Instance.timingPointsList.Add(timingPoints);
+            }
+        }
+        file.Close();
     }
 }

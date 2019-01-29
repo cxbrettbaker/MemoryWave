@@ -4,10 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HitObject
+public class HitEvent
 {
-    private int x;
-    private int y;
+    private int key;
     private int offset;
     private int endOffset;
 
@@ -19,29 +18,14 @@ public class HitObject
     private bool flashYellow;
     private bool isHold;
     private bool flashBlack;
-    
-
-    public HitObject()
-    {
-
-    }
 
     /************************
      * getters
      ***********************/
-     public void printAll()
-    {
-        Debug.Log(string.Format("HitObject: {0} {1} {2} {3} {4} | {5} {6} {7} {8} {9} {10}",x, y, offset, isNote, isMine, flashRed, flashGreen, flashBlue, flashYellow, isHold, flashBlack));
-    }
 
-    public int getX()
+    public int getKey()
     {
-        return x;
-    }
-
-    public int getY()
-    {
-        return y;
+        return key;
     }
 
     public int getOffset()
@@ -99,14 +83,9 @@ public class HitObject
      ***********************/
     
 
-    public void setX(string input)
+    public void setKey(string input)
     {
-        x = Convert.ToInt32(input);
-    }
-
-    public void setY(string input)
-    {
-        y = Convert.ToInt32(input);
+        key = Convert.ToInt32(input);
     }
 
     public void setOffset(string input)

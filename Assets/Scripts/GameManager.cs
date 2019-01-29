@@ -13,8 +13,8 @@ public class GameManager : MonoBehaviour
 
 	int nextIndex = 0;
 
-    List<TimingPoints> timingPointsList = new List<TimingPoints>();
-    public List<HitObject> hitObjectsList = new List<HitObject>();
+    public List<TimingPoints> timingPointsList = new List<TimingPoints>();
+    public List<HitEvent> hitEventsList = new List<HitEvent>();
     double startTime;
     double noteStartTime;
     int index;
@@ -25,7 +25,6 @@ public class GameManager : MonoBehaviour
     bool noteFlag = false;
 
     public GameObject simonSaysController;
-    public GameObject noteController;
     public GameObject noteScroller;
     public AudioSource audioSource;
     public double timer = 0.0f;
@@ -42,7 +41,7 @@ public class GameManager : MonoBehaviour
     public int timeBuffer; // time in miliseconds before song starts
     public AudioClip audioClip;
 
-    public static GameManager instance;
+    public static GameManager Instance;
 
     public Transform leftSpawnerBig;
     public Transform leftSpawnerSmall;
@@ -72,81 +71,21 @@ public class GameManager : MonoBehaviour
 
     void loadLevel()
     {
-        Dictionary<string, string> song = SongSelectParser.Instance.selectedSong;
+        Dictionary<string, string> song = LevelParser.Instance.selectedSong;
         string filename = song["SongMap"];
         audioClip = Resources.Load<AudioClip>(song["SongPreview"]);
         songLength = audioClip.length;
         audioSource.clip = audioClip;
-        
-        //StartCoroutine(PlaySong(audioClip));
-
-        string line;
-        bool timingPointsStart = false;
-        bool hitObjectsStart = false;
-        string[] tmp;
-        
-
-        // Read the file and display it line by line.  
-        System.IO.StreamReader file =
-        new System.IO.StreamReader(filename);
-        while ((line = file.ReadLine()) != null)
-        {
-            System.Console.WriteLine(line);
-            line = line.Trim();
-            if (line.Length == 0 || line[0] == '/')
-            {
-                continue;
-            }
-            //Debug.Log(line);
-
-            if (line == "[TimingPoints]")
-            {
-                //Debug.Log("TimingPoints start");
-                hitObjectsStart = false;
-                timingPointsStart = true;
-                continue;
-            }
-            if (line == "[HitObjects]")
-            {
-                //Debug.Log("hitobject start");
-                hitObjectsStart = true;
-                timingPointsStart = false;
-                continue;
-            }
-
-            if (hitObjectsStart)
-            {
-                //Debug.Log(line);
-                tmp = line.Split(',');
-                HitObject hitObjects = new HitObject();
-                hitObjects.setX(tmp[0]);
-                hitObjects.setY(tmp[1]);
-                hitObjects.setOffset(tmp[2]);
-                hitObjects.setIsNote(tmp[3]);
-                hitObjects.setIsMine(tmp[3]);
-                hitObjects.setColour(tmp[3]);
-                hitObjects.setFlashBlack(tmp[3]);
-                hitObjects.setIsHold(tmp[3]);
-                hitObjects.setEndOffset(tmp[4]);
-                hitObjectsList.Add(hitObjects);
-            }
-
-            if (timingPointsStart)
-            {
-                tmp = line.Split(',');
-                TimingPoints timingPoints = new TimingPoints(Convert.ToInt32(tmp[0]), Convert.ToSingle(tmp[1]), Convert.ToInt32(tmp[2]), Convert.ToInt32(tmp[3]), Convert.ToInt32(tmp[4]));
-                timingPointsList.Add(timingPoints);
-            }
-        }
-        file.Close();
+        LevelParser.Instance.ParseLevel(filename);
     }
 
     void Start() {
-        instance = this;
+        Instance = this;
 
-        // File parser for Kevin to do stuff with.		
+        timingPointsList = new List<TimingPoints>();
+        hitEventsList = new List<HitEvent>();
+	
         loadLevel();
-        // Start Song
 
         startTime = 0;
         index = 0;
@@ -195,7 +134,7 @@ public class GameManager : MonoBehaviour
         }
 
 
-        while (index < hitObjectsList.Count)
+        while (index < hitEventsList.Count)
         {
             //gets latest timing points
             offsetTime = (AudioSettings.dspTime - startTime) * 1000 + scrollDelay;
@@ -218,7 +157,7 @@ public class GameManager : MonoBehaviour
         
             noteOffsetTime = (AudioSettings.dspTime - startTime) * 1000;
             noteOffsetTime += scrollDelay;
-            HitObject hitObject = hitObjectsList[index];
+            HitEvent hitObject = hitEventsList[index];
 
             if (noteOffsetTime >= hitObject.getOffset()) {
                 //Debug.Log("Note " + hitObject.getOffset() + " Spawn time: " + offsetTime + "\nNote offset: " + noteOffsetTime);
@@ -281,7 +220,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void spawnStepNote(GameObject ring, Transform spawner, HitObject hitObject, KeyCode key)
+    void spawnStepNote(GameObject ring, Transform spawner, HitEvent hitObject, KeyCode key)
     {
         if (hitObject.IsHold())
         {
@@ -300,7 +239,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    IEnumerator spawnStepHold(GameObject ring, Transform spawner, HitObject hitObject, int offsetDiff, KeyCode key)
+    IEnumerator spawnStepHold(GameObject ring, Transform spawner, HitEvent hitObject, int offsetDiff, KeyCode key)
     {
         GameObject startHold = Instantiate(ring, spawner.position, spawner.rotation);
         startHold.transform.SetParent(parentObject.transform);
@@ -323,7 +262,7 @@ public class GameManager : MonoBehaviour
         endHold.GetComponent<EndHold>().Initialize(spawner.position, hitbox.transform.position, hitObject.getEndOffset(), scrollDelay, key, startHold, midHold);
     }
 
-    void spawnMemoryNote(GameObject ring, Transform spawner, HitObject hitObject, KeyCode key)
+    void spawnMemoryNote(GameObject ring, Transform spawner, HitEvent hitObject, KeyCode key)
     {
         var currentRing = Instantiate(ring, spawner.localPosition, Quaternion.identity);
         currentRing.transform.SetParent(parentDiamond.transform, false);
@@ -333,11 +272,11 @@ public class GameManager : MonoBehaviour
         currentRing.GetComponent<DiamondRing>().keyCode = key;
     }
 
-    public void spawnNotes(HitObject hitObject)
+    public void spawnNotes(HitEvent hitObject)
     {
-        switch(hitObject.getX())
+        switch(hitObject.getKey())
         {
-            case 64:   // LEFT
+            case 0:   // LEFT
                 if (memoryMode) // Currently in a memory timing section
                 {
                     spawnMemoryNote(diamondRing, diamondRing.transform, hitObject, keyLeft);
@@ -351,7 +290,7 @@ public class GameManager : MonoBehaviour
                     spawnStepNote(leftBigRing, leftSpawnerBig, hitObject, keyLeft);
                 }
                 break;
-            case 192:  // DOWN
+            case 1:  // DOWN
                 if (memoryMode)
                 {
                     spawnMemoryNote(diamondRing, diamondRing.transform, hitObject, keyDown);
@@ -365,7 +304,7 @@ public class GameManager : MonoBehaviour
                     spawnStepNote(leftSmallRing, leftSpawnerSmall, hitObject, keyDown);
                 }
                 break;
-            case 320:  // UP
+            case 2:  // UP
                 if (memoryMode)
                 {
                     spawnMemoryNote(diamondRing, diamondRing.transform, hitObject, keyUp);
@@ -379,7 +318,7 @@ public class GameManager : MonoBehaviour
                     spawnStepNote(rightSmallRing, rightSpawnerSmall, hitObject, keyUp);
                 }
                 break;
-            case 448:  // RIGHT
+            case 3:  // RIGHT
                 if (memoryMode)
                 {
                     spawnMemoryNote(diamondRing, diamondRing.transform, hitObject, keyRight);

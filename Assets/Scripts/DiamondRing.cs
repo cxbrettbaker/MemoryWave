@@ -19,7 +19,7 @@ public class DiamondRing : MonoBehaviour
     {
         if (hit && Input.GetKeyDown(keyCode))
         {
-            GameManager.instance.NoteHit(goodHit);
+            GameManager.Instance.NoteHit(goodHit);
             gameObject.SetActive(false);
             Destroy(gameObject);
         }
@@ -55,7 +55,7 @@ public class DiamondRing : MonoBehaviour
         {
             hit = false;
             goodHit = false;
-            GameManager.instance.NoteMissed();
+            GameManager.Instance.NoteMissed();
         }
     }
 
