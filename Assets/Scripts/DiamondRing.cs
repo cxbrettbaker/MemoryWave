@@ -14,6 +14,7 @@ public class DiamondRing : MonoBehaviour
     public bool hit;
     public KeyCode keyCode;
     public bool goodHit;
+    bool broadcast;
 
     // Update is called once per frame
     void Update()

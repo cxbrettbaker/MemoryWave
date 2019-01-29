@@ -77,6 +77,7 @@ public class GameManager : MonoBehaviour
     public GameObject spriteRightSmall;
     public GameObject spriteRightBig;
     Color[] colorArray;
+    int[] colorIntArray;
     public GameObject memoryFlash;
     public GameObject invertedMemoryFlash;
 
@@ -115,6 +116,11 @@ public class GameManager : MonoBehaviour
         colorArray[1] = Color.green;
         colorArray[2] = Color.red;
         colorArray[3] = Color.blue;
+        colorIntArray = new int[4];
+        colorIntArray[0] = 0;
+        colorIntArray[1] = 1;
+        colorIntArray[2] = 2;
+        colorIntArray[3] = 3;
 
         // Grab first timing point information
         scrollDelay = delayHandler.GetComponent<DelayHandler>().UpdateBPM(timingPointsList[0].getMsPerBeat());
@@ -242,15 +248,15 @@ public class GameManager : MonoBehaviour
                 {
 
                     HitEvent nextHitObject = hitEventsList[index + 1];
-                    int nextHitMode = FetchNextNoteInfo(nextHitObject);
+                    int nextHitMode = FetchNotePlayMode(nextHitObject);
                     // Check if the next note is a memory input corresponding to the start of memory sequence
                     if (nextHitMode != 0 && nextHitObject.IsNote() && currentMemorySequence.Peek().isSequenceStart())
                     {
                         StopCoroutine(HandleMemoryStart(nextHitObject, nextHitMode));
                         StartCoroutine(HandleMemoryStart(nextHitObject, nextHitMode));
                     }
-                    StopCoroutine(HandleMemorySprites(hitObject, FetchNextNoteInfo(hitObject)));
-                    StartCoroutine(HandleMemorySprites(hitObject, FetchNextNoteInfo(hitObject)));
+                    StopCoroutine(HandleMemorySprites(hitObject, FetchNotePlayMode(hitObject)));
+                    StartCoroutine(HandleMemorySprites(hitObject, FetchNotePlayMode(hitObject)));
                 }
             }
             else // if next hit object doesn't need to be spawned now
@@ -263,7 +269,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    int FetchNextNoteInfo(HitEvent nextHitObject)
+    int FetchNotePlayMode(HitEvent nextHitObject)
     {
         if (timingIndex < timingPointsList.Count && nextHitObject.getOffset() >= timingPointsList[timingIndex].getOffset())
         {
@@ -281,34 +287,6 @@ public class GameManager : MonoBehaviour
 
     IEnumerator HandleMemoryStart(HitEvent nextHitObject, int playMode)
     {
-        //Debug.Log("CALLED: START");
-        //if (nextHitObject.getColorArray().Length == 4) // Next hit event contains colorArray information
-        //{
-        //    colorArray = nextHitObject.getColorArray();
-        //}
-
-        //// Handle drawing of drum sprites
-        //LeanTween.value(spriteLeftBig, spriteLeftBig.GetComponent<Image>().color, colorArray[0], scrollDelay / 4000f) // quarter of scrollDelay
-        //    .setOnUpdate((Color color) =>
-        //    {
-        //        spriteLeftBig.GetComponent<Image>().color = color;
-        //    });
-        //LeanTween.value(spriteLeftSmall, spriteLeftSmall.GetComponent<Image>().color, colorArray[1], scrollDelay / 4000f)
-        //    .setOnUpdate((Color color) =>
-        //    {
-        //        spriteLeftSmall.GetComponent<Image>().color = color;
-        //    });
-        //LeanTween.value(spriteRightSmall, spriteRightSmall.GetComponent<Image>().color, colorArray[2], scrollDelay / 4000f)
-        //    .setOnUpdate((Color color) =>
-        //    {
-        //        spriteRightSmall.GetComponent<Image>().color = color;
-        //    });
-        //LeanTween.value(spriteRightBig, spriteRightBig.GetComponent<Image>().color, colorArray[3], scrollDelay / 4000f)
-        //    .setOnUpdate((Color color) =>
-        //    {
-        //        spriteRightBig.GetComponent<Image>().color = color;
-        //    });
-
         yield return new WaitForSecondsRealtime(scrollDelay / 2000f); // half of scrollDelay
 
         // Handle memory prompt
@@ -485,7 +463,10 @@ public class GameManager : MonoBehaviour
             currentRing.GetComponent<DiamondRing>().hitboxScale = hitboxDiamond.transform.localScale;
             currentRing.GetComponent<DiamondRing>().beatOfThisNote = hitObject.getOffset();
             currentRing.GetComponent<DiamondRing>().beatsShownInAdvance = scrollDelay;
-            switch (memNote.getKey())
+            if(hitObject.getColorIntArray().Length == 4)
+                colorIntArray = hitObject.getColorIntArray();
+            int intKey = Array.IndexOf(colorIntArray, memNote.getKey());
+            switch (intKey)
             {
                 case 0:   // LEFT
                     currentRing.GetComponent<DiamondRing>().keyCode = keyLeft;

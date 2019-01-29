@@ -10,6 +10,7 @@ public class HitEvent
     private int offset;
     private int endOffset;
     private Color[] colorArray = new Color[1];
+    private int[] colorIntArray = new int[1];
     private bool sequenceStart;
 
     private bool isNote; //true for note
@@ -90,10 +91,15 @@ public class HitEvent
         return colorArray;
     }
 
+    public int[] getColorIntArray()
+    {
+        return colorIntArray;
+    }
+
     /************************
      * setters
      ***********************/
-    
+
 
     public void setKey(string input)
     {
@@ -150,8 +156,10 @@ public class HitEvent
         if (colors.Length > 1)
         {
             colorArray = new Color[4];
+            colorIntArray = new int[4];
             for (int i = 0; i < 4; i++)
             {
+                colorIntArray[i] = Convert.ToInt32(colors[i]);
                 switch (colors[i])
                 {
                     case "0":
