@@ -5,21 +5,24 @@ using UnityEngine.UI;
 
 public class MemoryManager : MonoBehaviour
 {
- 
-
 	public GameObject gameButtonPrefab;
 
     public List<ButtonSetting> buttonSettings;
 
     public Transform gameFieldPanelTransform;
 
-	
-	public GameObject redButton;
+    public static MemoryManager Instance;
+
+    public GameObject redButton;
 	public GameObject blueButton;
 	public GameObject yellowButton;
 	public GameObject greenButton;
-	
-	
+
+    public Queue<HitEvent> currentMemorySequence;
+    
+    public int sequenceSize;
+    public int sequenceHitCount;
+
     List<GameObject> gameButtons;
 
     int bleepCount = 3;
@@ -31,18 +34,19 @@ public class MemoryManager : MonoBehaviour
 	
 	// Calls to init button objects  
     void Start() {
+        Instance = this;
+
         gameButtons = new List<GameObject>();
 	
         ButtonSetter(0, redButton);
 		ButtonSetter(1, blueButton);
 		ButtonSetter(2, yellowButton);
 		ButtonSetter(3, greenButton);
-		
+        currentMemorySequence = new Queue<HitEvent>();
     }
 
-	
-	// actually create the buttons 
-	void ButtonSetter(int index, GameObject gameButton) {
+    // actually create the buttons 
+    void ButtonSetter(int index, GameObject gameButton) {
 		gameButton.GetComponent<Image>().color = buttonSettings[index].normalColor;
 		gameButtons.Add(gameButton);
     }
@@ -92,8 +96,32 @@ public class MemoryManager : MonoBehaviour
     }
 
 
+    public void SignalNewSequence()
+    {
+        sequenceSize = currentMemorySequence.Count;
+        sequenceHitCount = 0;
+    }
+
+
+    public void NoteHit()
+    {
+        GameManager.Instance.NoteHit(true);
+        sequenceHitCount++;
+        if(sequenceHitCount >= sequenceSize)
+        {
+            Success();
+        }
+    }
+
+    public void NoteMissed()
+    {
+        GameManager.Instance.NoteMissed();
+        Missed();
+    }
+
     void Success() {
-		// handle success
+        // handle success
+        Debug.Log("FULL SEQUENCE HIT");
 	}
 	
 	void Missed() {

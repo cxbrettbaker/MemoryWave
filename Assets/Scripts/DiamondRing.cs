@@ -19,26 +19,25 @@ public class DiamondRing : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!broadcast)
+        {
+            //Debug.Log("Expected " + keyCode);
+            broadcast = true;
+        }
         if (hit && Input.GetKeyDown(keyCode))
         {
-            GameManager.Instance.NoteHit(goodHit);
-            gameObject.SetActive(false);
+            MemoryManager.Instance.NoteHit();
             Destroy(gameObject);
+            Debug.Log("hit " + keyCode);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "goodDiamondHitbox")
-        {
-            goodHit = true;
-            hit = true;
-            gameObject.SetActive(false);
-        }
         if (collision.tag == "normalDiamondHitbox")
         {
             hit = true;
-            gameObject.GetComponent<LineRenderer>().enabled = false;
+            //gameObject.GetComponent<LineRenderer>().enabled = false;
         }
         else if (collision.tag == "despawnerDiamond")
         {
@@ -48,16 +47,11 @@ public class DiamondRing : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.tag == "goodDiamondHitbox")
-        {
-            goodHit = false;
-            hit = false;
-        }
         if (collision.tag == "normalDiamondHitbox")
         {
             hit = false;
             goodHit = false;
-            GameManager.Instance.NoteMissed();
+            MemoryManager.Instance.NoteMissed();
         }
     }
 

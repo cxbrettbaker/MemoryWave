@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 [RequireComponent(typeof(AudioSource))]
 public class GameManager : MonoBehaviour
@@ -23,8 +24,7 @@ public class GameManager : MonoBehaviour
     double noteOffsetTime;
     public float scrollDelay;
     bool noteFlag = false;
-
-    public GameObject memoryController;
+    
     public GameObject delayHandler;
     public AudioSource audioSource;
     public double timer = 0.0f;
@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
     public KeyCode keyUp;
     public KeyCode keyRight;
 
-    public Queue<HitEvent> currentMemorySequence;
+    public Queue<HitEvent> memorySequence;
     public GameObject spriteLeftBig;
     public GameObject spriteLeftSmall;
     public GameObject spriteRightSmall;
@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviour
 
         timingPointsList = new List<TimingPoints>();
         hitEventsList = new List<HitEvent>();
-        currentMemorySequence = new Queue<HitEvent>();
+        memorySequence = new Queue<HitEvent>();
 
         loadLevel();
 
@@ -157,12 +157,10 @@ public class GameManager : MonoBehaviour
         {
             startTime = AudioSettings.dspTime + (timeBuffer / 1000);
             audioSource.PlayDelayed(timeBuffer / 1000);
-            //Debug.Log("start time: " + startTime);
         }
 
         FetchCurrentNote();
-
-        //Debug.Log("Song length: " + songLength);
+        
         timer = AudioSettings.dspTime - startTime;
         if ((timer + timeBuffer / 1000) >= songLength)
         {
@@ -218,31 +216,29 @@ public class GameManager : MonoBehaviour
                 {
                     HitEvent memoryNote = new HitEvent();
                     memoryNote.setSequenceStart(isSequenceStart);
-                    if (isSequenceStart)
-                        Debug.Log("START " + hitObject.getOffset());
                     if (hitObject.isFlashYellow())
                     {
                         StartCoroutine(FlashMemoryPrompt("yellow", hitObject.IsflashBlack()));
                         memoryNote.setKey("0");
-                        currentMemorySequence.Enqueue(memoryNote);
+                        memorySequence.Enqueue(memoryNote);
                     }
                     if (hitObject.isFlashGreen())
                     {
                         StartCoroutine(FlashMemoryPrompt("green", hitObject.IsflashBlack()));
                         memoryNote.setKey("1");
-                        currentMemorySequence.Enqueue(memoryNote);
+                        memorySequence.Enqueue(memoryNote);
                     }
                     if (hitObject.isFlashRed())
                     {
                         StartCoroutine(FlashMemoryPrompt("red", hitObject.IsflashBlack()));
                         memoryNote.setKey("2");
-                        currentMemorySequence.Enqueue(memoryNote);
+                        memorySequence.Enqueue(memoryNote);
                     }
                     if (hitObject.isFlashBlue())
                     {
                         StartCoroutine(FlashMemoryPrompt("blue", hitObject.IsflashBlack()));
                         memoryNote.setKey("3");
-                        currentMemorySequence.Enqueue(memoryNote);
+                        memorySequence.Enqueue(memoryNote);
                     }
                     isSequenceStart = false;
                 }
@@ -258,10 +254,13 @@ public class GameManager : MonoBehaviour
                     HitEvent nextHitObject = hitEventsList[index + 1];
                     int nextHitMode = FetchNotePlayMode(nextHitObject);
                     // Check if the next note is a memory input corresponding to the start of memory sequence
-                    if (nextHitMode != 0 && nextHitObject.IsNote() && currentMemorySequence.Peek().isSequenceStart())
+                    if (memorySequence.Count > 0)
                     {
-                        StopCoroutine(HandleMemoryStart(nextHitObject, nextHitMode));
-                        StartCoroutine(HandleMemoryStart(nextHitObject, nextHitMode));
+                        if (nextHitMode != 0 && nextHitObject.IsNote() && memorySequence.Peek().isSequenceStart())
+                        {
+                            StopCoroutine(HandleMemoryStart(nextHitObject, nextHitMode));
+                            StartCoroutine(HandleMemoryStart(nextHitObject, nextHitMode));
+                        }
                     }
                     StopCoroutine(HandleMemorySprites(hitObject, FetchNotePlayMode(hitObject)));
                     StartCoroutine(HandleMemorySprites(hitObject, FetchNotePlayMode(hitObject)));
@@ -295,6 +294,26 @@ public class GameManager : MonoBehaviour
 
     IEnumerator HandleMemoryStart(HitEvent nextHitObject, int playMode)
     {
+        // Create memory sequence
+        if (memorySequence.Count > 0)
+        {
+            MemoryManager.Instance.currentMemorySequence.Enqueue(memorySequence.Dequeue());
+            if (memorySequence.Count > 0)
+            {
+                while (memorySequence.Count > 0 && !memorySequence.Peek().isSequenceStart())
+                {
+                    MemoryManager.Instance.currentMemorySequence.Enqueue(memorySequence.Dequeue());
+                }
+                // Handle inverted memory sequence
+                if (playMode == -1)
+                {
+                    Queue<HitEvent> reversedQueue = new Queue<HitEvent>(MemoryManager.Instance.currentMemorySequence.Reverse());
+                    MemoryManager.Instance.currentMemorySequence = reversedQueue;
+                }
+                MemoryManager.Instance.SignalNewSequence();
+            }
+        }
+
         yield return new WaitForSecondsRealtime(scrollDelay / 2000f); // half of scrollDelay
 
         // Handle memory prompt
@@ -399,16 +418,16 @@ public class GameManager : MonoBehaviour
         switch(color)
         {
             case "red":
-                memoryController.GetComponent<MemoryManager>().StoreBleep(0, isBlack);
+                MemoryManager.Instance.StoreBleep(0, isBlack);
                 break;
             case "blue":
-                memoryController.GetComponent<MemoryManager>().StoreBleep(1, isBlack);
+                MemoryManager.Instance.StoreBleep(1, isBlack);
                 break;
             case "yellow":
-                memoryController.GetComponent<MemoryManager>().StoreBleep(2, isBlack);
+                MemoryManager.Instance.StoreBleep(2, isBlack);
                 break;
             case "green":
-                memoryController.GetComponent<MemoryManager>().StoreBleep(3, isBlack);
+                MemoryManager.Instance.StoreBleep(3, isBlack);
                 break;
         }
     }
@@ -459,9 +478,9 @@ public class GameManager : MonoBehaviour
 
     void spawnMemoryNote(GameObject ring, Transform spawner, HitEvent hitObject, KeyCode key)
     {
-        if (currentMemorySequence.Count > 0)
+        if (MemoryManager.Instance.currentMemorySequence.Count > 0)
         {
-            HitEvent memNote = currentMemorySequence.Dequeue();
+            HitEvent memNote = MemoryManager.Instance.currentMemorySequence.Dequeue();
             var currentRing = Instantiate(ring, spawner.localPosition, Quaternion.identity);
             currentRing.transform.SetParent(parentDiamond.transform, false);
             currentRing.GetComponent<DiamondRing>().hitboxScale = hitboxDiamond.transform.localScale;
