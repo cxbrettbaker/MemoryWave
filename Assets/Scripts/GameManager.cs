@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
     public GameObject diamondHolder;
     public GameObject diamondHitbox;
 
-
+    public KeyCode keyPause;
     public KeyCode keyLeft;
     public KeyCode keyDown;
     public KeyCode keyUp;
@@ -126,6 +126,11 @@ public class GameManager : MonoBehaviour
     }
 
     void Update() {
+
+        if(Input.GetKeyDown(keyPause))
+        {
+            Pause();
+        }
 
         if (startTime == 0)
         {
@@ -473,6 +478,16 @@ public class GameManager : MonoBehaviour
                 break;
         }
         
+    }
+
+    public void Fail()
+    {
+        Debug.Log("------- LEVEL FAILED ---------");
+    }
+
+    public void Pause()
+    {
+        Debug.Log("------- PAUSE CLICKED ---------");
     }
 
 }

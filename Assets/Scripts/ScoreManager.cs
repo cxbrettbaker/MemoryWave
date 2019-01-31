@@ -20,40 +20,29 @@ public class ScoreManager : MonoBehaviour
     double okHitWindow;
     public GameObject hitIndicator;
 
-    int maxGreat;
-    public int numGreat;
-    public int numGood;
-    public int numOK;
-    public int numMiss;
-    public int score;
-    public int maxScore;
-    public float accuracy;
-    public int maxCombo;
-    int combo;
+    int maxGreat = 0;
+    public int numGreat = 0;
+    public int numGood = 0;
+    public int numOK = 0;
+    public int numMiss = 0;
+    public int score = 0;
+    public int maxScore = 0;
+    public int maxCombo = 0;
+    int combo = 0;
     int combobreakThreshold = 13;
-
-    // Start is called before the first frame update
-    void Start()
+    
+    void Awake()
     {
         Instance = this;
-        maxGreat = 0;
-        numGreat = 0;
-        numGood = 0;
-        numOK = 0;
-        numMiss = 0;
-        score = 0;
-        maxScore = 0;
-        accuracy = 0f;
-        maxCombo = 0;
-        combo = 0;
-
+        SetOverallDifficulty(5);
     }
 
-    public void SetOverallDifficulty(int overallDifficulty)
+    public void SetOverallDifficulty(float overallDifficulty)
     {
-        okHitWindow = 150 + 50 * (5 - overallDifficulty) / 5;
-        goodHitWindow = 100 + 40 * (5 - overallDifficulty) / 5;
-        greatHitWindow = 50 + 30 * (5 - overallDifficulty) / 5;
+        Debug.Log("DIFFICULTY: " + overallDifficulty);
+        okHitWindow = 150f + 50f * (5f - overallDifficulty) / 5f;
+        goodHitWindow = 100f + 40f * (5f - overallDifficulty) / 5f;
+        greatHitWindow = 50f + 30f * (5f - overallDifficulty) / 5f;
     }
 
     bool InGreatHitWindow(HitEvent currentNote, double _localCurrentOffset)
@@ -176,7 +165,7 @@ public class ScoreManager : MonoBehaviour
     {
         if (maxGreat != 0)
         {
-            return (Convert.ToSingle(numGreat) / Convert.ToSingle(maxGreat));
+            return (Convert.ToSingle(numGreat) / Convert.ToSingle(maxGreat) * 100);
         }
         else
             return 0;

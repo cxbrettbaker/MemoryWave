@@ -9,6 +9,7 @@ Particle clouds in the background that change color in time with the BPM, color 
 
 
 KNOWN BUGS: 
+Mines only give 300, should give 600
 mashing on hold notes sometimes causes a huge black ring to flash on the screen for a second.
 fake startrings seem to have clipping issues on only the third drum
 MAXSCORE changes each time you play, due to the update cycles on hold notes
