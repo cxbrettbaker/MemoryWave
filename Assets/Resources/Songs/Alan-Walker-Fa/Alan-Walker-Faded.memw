@@ -17,7 +17,7 @@ LevelSetID:-1
 
 [Difficulty]
 HPDrainRate:5
-OverallDifficulty:1
+OverallDifficulty:7
 ApproachRate:5
 
 [TimingPoints]

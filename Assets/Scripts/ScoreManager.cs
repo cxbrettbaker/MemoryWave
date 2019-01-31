@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -8,47 +9,47 @@ public class ScoreManager : MonoBehaviour
     public int GOOD  = 100;
     public int OK     = 50;
     public int MISS    = 0;
-    public int STEPBASESCORE            = 1;
-    public int MEMORYBASESCORE          = 5;
-    public int INVERTEDMEMORYBASESCORE = 10;
+    public int STEPBASESCORE            = 2;
+    public int STEPHOLDBASESCORE        = 1;
+    public int MEMORYBASESCORE         = 10;
+    public int INVERTEDMEMORYBASESCORE = 15;
 
     public static ScoreManager Instance;
     double greatHitWindow;
     double goodHitWindow;
     double okHitWindow;
-    int overallDifficulty;
     public GameObject hitIndicator;
 
     int maxGreat;
-    int numGreat;
-    int numGood;
-    int numOK;
-    int numMiss;
-    int score;
-    float accuracy;
-    int maxCombo;
+    public int numGreat;
+    public int numGood;
+    public int numOK;
+    public int numMiss;
+    public int score;
+    public int maxScore;
+    public float accuracy;
+    public int maxCombo;
     int combo;
+    int combobreakThreshold = 13;
 
     // Start is called before the first frame update
     void Start()
     {
         Instance = this;
-        overallDifficulty = 0;
-        SetOverallDifficulty();
-
         maxGreat = 0;
         numGreat = 0;
         numGood = 0;
         numOK = 0;
         numMiss = 0;
         score = 0;
+        maxScore = 0;
         accuracy = 0f;
         maxCombo = 0;
         combo = 0;
 
     }
 
-    public void SetOverallDifficulty()
+    public void SetOverallDifficulty(int overallDifficulty)
     {
         okHitWindow = 150 + 50 * (5 - overallDifficulty) / 5;
         goodHitWindow = 100 + 40 * (5 - overallDifficulty) / 5;
@@ -129,27 +130,56 @@ public class ScoreManager : MonoBehaviour
         if(hitScore == GREAT)
         {
             flashColor = Color.yellow;
+            UpdateCombo();
+            numGreat++;
         }
         else if(hitScore == GOOD)
         {
             flashColor = Color.green;
+            UpdateCombo();
+            numGood++;
         }
         else if(hitScore == OK)
         {
             flashColor = Color.blue;
+            UpdateCombo();
+            numOK++;
         }
         else
         {
             flashColor = Color.red;
+            ComboBreak();
+            numMiss++;
         }
         FlashManager.Instance.Flash(hitIndicator, Color.clear, flashColor, GameManager.Instance.scrollDelay / 20000f, GameManager.Instance.scrollDelay / 20000f);
         score += hitScore * baseScoreMultiplier;
+        maxScore += GREAT * baseScoreMultiplier;
         maxGreat++;
+        Debug.Log("SCORE: " + score + "\nMAX: " + maxScore);
     }
 
-    float CalculateAccuracy()
+    void ComboBreak()
     {
-        return (numGreat / maxGreat);
+        if (combo >= combobreakThreshold)
+            Debug.Log("COMBO BREAK");
+        combo = 0;
+    }
+
+    void UpdateCombo()
+    {
+        combo++;
+        if (maxCombo <= combo)
+            maxCombo = combo;
+    }
+
+    public float CalculateAccuracy()
+    {
+        if (maxGreat != 0)
+        {
+            return (Convert.ToSingle(numGreat) / Convert.ToSingle(maxGreat));
+        }
+        else
+            return 0;
     }
 
 }

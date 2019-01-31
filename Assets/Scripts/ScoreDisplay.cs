@@ -16,10 +16,10 @@ public class ScoreDisplay : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Score.GetComponent<TextMeshProUGUI>().text = "Score:" + GameManager.Instance.score.ToString();
-        Accuracy.GetComponent<TextMeshProUGUI>().text = "Accuracy: WIP";
-        NormalHits.GetComponent<TextMeshProUGUI>().text = "Normal Hits: " + GameManager.Instance.numNormalHit.ToString();
-        GoodHits.GetComponent<TextMeshProUGUI>().text = "Good Hits: " + GameManager.Instance.numGoodHit.ToString();
+        Score.GetComponent<TextMeshProUGUI>().text = "Score:" + ScoreManager.Instance.score.ToString();
+        Accuracy.GetComponent<TextMeshProUGUI>().text = "Accuracy: " + ScoreManager.Instance.CalculateAccuracy().ToString("F2") + "%";
+        NormalHits.GetComponent<TextMeshProUGUI>().text = "Great Hits: " + ScoreManager.Instance.numGreat.ToString();
+        GoodHits.GetComponent<TextMeshProUGUI>().text = "Good Hits: " + ScoreManager.Instance.numGood.ToString();
     }
 
     public void OnRetryClick()

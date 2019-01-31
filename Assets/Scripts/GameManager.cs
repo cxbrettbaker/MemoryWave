@@ -84,6 +84,7 @@ public class GameManager : MonoBehaviour
         audioClip = Resources.Load<AudioClip>(song["SongPreview"]);
         songLength = audioClip.length;
         audioSource.clip = audioClip;
+        ScoreManager.Instance.SetOverallDifficulty(Convert.ToInt32(song["OverallDifficulty"]));
         LevelParser.Instance.ParseLevel(filename);
     }
 

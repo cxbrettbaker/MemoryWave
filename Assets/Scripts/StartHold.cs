@@ -68,15 +68,15 @@ public class StartHold : MonoBehaviour
                     passedMid = false;
                     UnFreeze();
                     DisableHold();
-                    ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.MISS, ScoreManager.Instance.STEPBASESCORE);
+                    ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.MISS, ScoreManager.Instance.STEPHOLDBASESCORE);
                 }
                 else
                 {
                     if (passedMid && passedStart)
-                        ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.GREAT, ScoreManager.Instance.STEPBASESCORE);
+                        ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.GREAT, ScoreManager.Instance.STEPHOLDBASESCORE);
                     else
                     {
-                        ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.MISS, ScoreManager.Instance.STEPBASESCORE);
+                        ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.MISS, ScoreManager.Instance.STEPHOLDBASESCORE);
                     }
                 }
             }

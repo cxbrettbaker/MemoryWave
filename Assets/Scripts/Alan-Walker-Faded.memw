@@ -1,6 +1,5 @@
 TODO:
 
-Score implementation (star hitmarker - blue 50,  green 100, yellow 300 (glow effect))
 Visualizer
 Brief song	 volume fade out on combo break - loud miss sound
 HP implementation
@@ -9,8 +8,7 @@ Change the sprites of the step notes to look more like sound waves? Still not su
 Particle clouds in the background that change color in time with the BPM, color derived from something like ColorChord.
 
 
-Unity seems to update AudioSettings.dspTime every 50 ms.
-
 KNOWN BUGS: 
 mashing on hold notes sometimes causes a huge black ring to flash on the screen for a second.
 fake startrings seem to have clipping issues on only the third drum
+MAXSCORE changes each time you play, due to the update cycles on hold notes
