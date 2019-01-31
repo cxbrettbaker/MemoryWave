@@ -10,49 +10,33 @@ public class Mine : MonoBehaviour
     public float beatsShownInAdvance;
     public float beatOfThisNote;
     public float songPosInBeats;
-
-    public bool hit;
+    
     public KeyCode keyCode;
-    public bool goodHit;
+    HitEvent currentNote;
 
     // Update is called once per frame
     void Update()
     {
-        if (hit && Input.GetKeyDown(keyCode))
+        double _localCurrentOffset = GameManager.Instance.timer * 1000f;
+        if (ScoreManager.Instance.InHitWindow(currentNote, _localCurrentOffset))
         {
-            gameObject.SetActive(false);
-            Destroy(gameObject);
+            if (Input.GetKeyDown(keyCode))
+            {
+                ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.MISS, ScoreManager.Instance.STEPBASESCORE);
+                Destroy(gameObject);
+            }
+        }
+        else if (ScoreManager.Instance.MissedHitWindow(currentNote, _localCurrentOffset))
+        {
+            ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.GREAT, ScoreManager.Instance.STEPBASESCORE);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "goodHitbox")
-        {
-            goodHit = true;
-            hit = true;
-        }
-        if (collision.tag == "normalHitbox")
-        {
-            hit = true;
-        }
-        else if (collision.tag == "despawner")
+        if (collision.tag == "despawner")
         {
             Destroy(gameObject);
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.tag == "goodHitbox")
-        {
-            goodHit = false;
-            hit = false;
-        }
-        if (collision.tag == "normalHitbox")
-        {
-            hit = false;
-            goodHit = false;
         }
     }
 
@@ -63,12 +47,13 @@ public class Mine : MonoBehaviour
         transform.position = Vector3.Lerp(spawnerPos, new Vector3(spawnerPos.x, hitboxPos.y - (spawnerPos.y - hitboxPos.y), spawnerPos.z), (beatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / (beatsShownInAdvance * 2));
     }
 
-    public void Initialize(Vector3 spawner, Vector3 hitbox, int offset, float scrollDelay, KeyCode key)
+    public void Initialize(Vector3 spawner, Vector3 hitbox, int offset, float scrollDelay, KeyCode key, HitEvent currentNote)
     {
         spawnerPos = spawner;
         hitboxPos = hitbox;
         beatOfThisNote = Convert.ToSingle(offset);
         beatsShownInAdvance = scrollDelay;
         keyCode = key;
+        this.currentNote = currentNote;
     }
 }

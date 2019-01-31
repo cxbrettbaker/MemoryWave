@@ -47,22 +47,18 @@ public class GameManager : MonoBehaviour
     public Transform rightSpawnerBig;
     public Transform rightSpawnerSmall;
 
-    public GameObject leftBigRing;
-    public GameObject leftSmallRing;
-    public GameObject rightBigRing;
-    public GameObject rightSmallRing;
-    public GameObject leftBigMine;
-    public GameObject leftSmallMine;
-    public GameObject rightBigMine;
-    public GameObject rightSmallMine;
-    public GameObject parentObject;
+    public GameObject bigRing;
+    public GameObject smallRing;
+    public GameObject bigMine;
+    public GameObject smallMine;
+    public GameObject noteHolder;
     public GameObject hitbox;
     public GameObject midRing;
     public bool memoryMode;
     public bool invertedMemoryMode;
     public GameObject diamondRing;
-    public GameObject parentDiamond;
-    public GameObject hitboxDiamond;
+    public GameObject diamondHolder;
+    public GameObject diamondHitbox;
 
 
     public KeyCode keyLeft;
@@ -286,7 +282,7 @@ public class GameManager : MonoBehaviour
         }
 
         yield return new WaitForSecondsRealtime(scrollDelay / 2000f); // half of scrollDelay
-        FlashManager.Instance.Flash(playMode == 1 ? memoryFlash : invertedMemoryFlash, Color.clear, Color.white, scrollDelay/8000f); // eighth of scrollDelay       
+        FlashManager.Instance.Flash(playMode == 1 ? memoryFlash : invertedMemoryFlash, Color.clear, Color.white, scrollDelay/8000f, scrollDelay/8000f); // eighth of scrollDelay       
     }
 
     IEnumerator HandleMemorySprites(HitEvent nextHitObject, int playMode)
@@ -321,16 +317,16 @@ public class GameManager : MonoBehaviour
         switch(color)
         {
             case "red":
-                MemoryNoteManager.Instance.StoreBleep(0, isBlack);
+                MemoryNoteManager.Instance.Bleep(0, isBlack);
                 break;
             case "blue":
-                MemoryNoteManager.Instance.StoreBleep(1, isBlack);
+                MemoryNoteManager.Instance.Bleep(1, isBlack);
                 break;
             case "yellow":
-                MemoryNoteManager.Instance.StoreBleep(2, isBlack);
+                MemoryNoteManager.Instance.Bleep(2, isBlack);
                 break;
             case "green":
-                MemoryNoteManager.Instance.StoreBleep(3, isBlack);
+                MemoryNoteManager.Instance.Bleep(3, isBlack);
                 break;
         }
     }
@@ -346,12 +342,12 @@ public class GameManager : MonoBehaviour
         else
         {
             var currentRing = Instantiate(ring, spawner.position, spawner.rotation);
-            currentRing.transform.SetParent(parentObject.transform);
+            currentRing.transform.SetParent(noteHolder.transform);
             currentRing.transform.localScale = ring.transform.localScale;
             if (hitObject.IsMine())
-                currentRing.AddComponent<Mine>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key);
+                currentRing.AddComponent<Mine>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key, hitObject);
             else
-                currentRing.AddComponent<Ring>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key);
+                currentRing.AddComponent<Ring>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key, hitObject);
         }
 
     }
@@ -359,24 +355,24 @@ public class GameManager : MonoBehaviour
     IEnumerator spawnStepHold(GameObject ring, Transform spawner, HitEvent hitObject, int offsetDiff, KeyCode key)
     {
         GameObject startHold = Instantiate(ring, spawner.position, spawner.rotation);
-        startHold.transform.SetParent(parentObject.transform);
+        startHold.transform.SetParent(noteHolder.transform);
         startHold.transform.localScale = ring.transform.localScale;
         startHold.AddComponent<StartHold>();
 
         GameObject midHold = Instantiate(midRing, spawner.position, spawner.rotation);
-        midHold.transform.SetParent(parentObject.transform);
+        midHold.transform.SetParent(noteHolder.transform);
         midHold.AddComponent<MidHold>();
         
         GameObject endHold = Instantiate(ring, spawner.position, spawner.rotation);
-        endHold.transform.SetParent(parentObject.transform);
+        endHold.transform.SetParent(noteHolder.transform);
         endHold.transform.localScale = ring.transform.localScale;
 
-        startHold.GetComponent<StartHold>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key, midHold, endHold, parentObject, ring);
-        midHold.GetComponent<MidHold>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key, startHold, endHold);
+        startHold.GetComponent<StartHold>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key, midHold, endHold, noteHolder, hitObject);
+        midHold.GetComponent<MidHold>().Initialize(spawner.position, hitbox.transform.position, hitObject.getOffset(), scrollDelay, key, startHold, endHold, hitObject);
         
         yield return new WaitForSecondsRealtime(offsetDiff / 1000f);
         endHold.AddComponent<EndHold>();
-        endHold.GetComponent<EndHold>().Initialize(spawner.position, hitbox.transform.position, hitObject.getEndOffset(), scrollDelay, key, startHold, midHold);
+        endHold.GetComponent<EndHold>().Initialize(spawner.position, hitbox.transform.position, hitObject.getEndOffset(), scrollDelay, key, startHold, midHold, hitObject);
     }
 
     void spawnMemoryNote(GameObject ring, Transform spawner, HitEvent hitObject, KeyCode key)
@@ -385,10 +381,9 @@ public class GameManager : MonoBehaviour
         {
             HitEvent memNote = MemoryNoteManager.Instance.currentMemorySequence.Dequeue();
             var currentRing = Instantiate(ring, spawner.localPosition, Quaternion.identity);
-            currentRing.transform.SetParent(parentDiamond.transform, false);
-            currentRing.GetComponent<DiamondRing>().hitboxScale = hitboxDiamond.transform.localScale;
-            currentRing.GetComponent<DiamondRing>().beatOfThisNote = hitObject.getOffset();
-            currentRing.GetComponent<DiamondRing>().beatsShownInAdvance = scrollDelay;
+            currentRing.transform.SetParent(diamondHolder.transform, false);
+            hitObject.setPlayMode(FetchNotePlayMode(hitObject));
+            currentRing.GetComponent<DiamondRing>().Initialize(diamondHitbox.transform.localScale, hitObject.getOffset(), scrollDelay, hitObject);
             if(hitObject.getColorIntArray().Length == 4)
                 colorIntArray = hitObject.getColorIntArray();
             int intKey = Array.IndexOf(colorIntArray, memNote.getKey());
@@ -424,11 +419,11 @@ public class GameManager : MonoBehaviour
                 }
                 else if (hitObject.IsMine())
                 {
-                    spawnStepNote(leftBigMine, leftSpawnerBig, hitObject, keyLeft);
+                    spawnStepNote(bigMine, leftSpawnerBig, hitObject, keyLeft);
                 }
                 else
                 {
-                    spawnStepNote(leftBigRing, leftSpawnerBig, hitObject, keyLeft);
+                    spawnStepNote(bigRing, leftSpawnerBig, hitObject, keyLeft);
                 }
                 break;
             case 1:  // DOWN
@@ -438,11 +433,11 @@ public class GameManager : MonoBehaviour
                 }
                 else if (hitObject.IsMine())
                 {
-                    spawnStepNote(leftSmallMine, leftSpawnerSmall, hitObject, keyDown);
+                    spawnStepNote(smallMine, leftSpawnerSmall, hitObject, keyDown);
                 }
                 else
                 {
-                    spawnStepNote(leftSmallRing, leftSpawnerSmall, hitObject, keyDown);
+                    spawnStepNote(smallRing, leftSpawnerSmall, hitObject, keyDown);
                 }
                 break;
             case 2:  // UP
@@ -452,11 +447,11 @@ public class GameManager : MonoBehaviour
                 }
                 else if (hitObject.IsMine())
                 {
-                    spawnStepNote(rightSmallMine, rightSpawnerSmall, hitObject, keyUp);
+                    spawnStepNote(smallMine, rightSpawnerSmall, hitObject, keyUp);
                 }
                 else
                 {
-                    spawnStepNote(rightSmallRing, rightSpawnerSmall, hitObject, keyUp);
+                    spawnStepNote(smallRing, rightSpawnerSmall, hitObject, keyUp);
                 }
                 break;
             case 3:  // RIGHT
@@ -466,11 +461,11 @@ public class GameManager : MonoBehaviour
                 }
                 else if (hitObject.IsMine())
                 {
-                    spawnStepNote(rightBigMine, rightSpawnerBig, hitObject, keyRight);
+                    spawnStepNote(bigMine, rightSpawnerBig, hitObject, keyRight);
                 }
                 else
                 {
-                    spawnStepNote(rightBigRing, rightSpawnerBig, hitObject, keyRight);
+                    spawnStepNote(bigRing, rightSpawnerBig, hitObject, keyRight);
                 }
                 break;
             default:

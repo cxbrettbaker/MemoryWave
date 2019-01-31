@@ -12,53 +12,19 @@ public class EndHold : MonoBehaviour
     public float beatOfThisNote;
     public float songPosInBeats;
 
-    public bool hit;
     public KeyCode keyCode;
-    public bool goodHit;
 
     public GameObject startHold;
     public GameObject midHold;
-    public bool passed;
-    public GameObject fakeStartRing;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        passed = false;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
+    HitEvent currentNote;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(startHold.GetComponent<StartHold>().fakeStartRing != null)
-            startHold.GetComponent<StartHold>().fakeStartRing.GetComponent<Image>().enabled = false;
         if (collision.tag == "despawner")
         {
-            Destroy(startHold.GetComponent<StartHold>().fakeStartRing);
             Destroy(startHold);
             Destroy(midHold);
             Destroy(gameObject);
-        }
-        else if (midHold.GetComponent<MidHold>().passed && Input.GetKey(keyCode))
-        {
-            gameObject.GetComponent<Image>().enabled = false;
-            passed = true;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (passed)
-        {
-        }
-        else if(collision.tag == "normalHitbox")
-        {
-            midHold.GetComponent<Image>().enabled = false;
-            gameObject.GetComponent<Image>().color = Color.black;
         }
     }
 
@@ -69,7 +35,7 @@ public class EndHold : MonoBehaviour
         transform.position = Vector3.Lerp(spawnerPos, new Vector3(spawnerPos.x, hitboxPos.y - (spawnerPos.y - hitboxPos.y), spawnerPos.z), (beatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / (beatsShownInAdvance * 2));
     }
 
-    public void Initialize(Vector3 spawner, Vector3 hitbox, int offset, float scrollDelay, KeyCode key, GameObject startRing, GameObject midHold)
+    public void Initialize(Vector3 spawner, Vector3 hitbox, int offset, float scrollDelay, KeyCode key, GameObject startRing, GameObject midHold, HitEvent currentNote)
     {
         spawnerPos = spawner;
         hitboxPos = hitbox;
@@ -78,5 +44,6 @@ public class EndHold : MonoBehaviour
         keyCode = key;
         startHold = startRing;
         this.midHold = midHold;
+        this.currentNote = currentNote;
     }
 }

@@ -11,22 +11,24 @@ public class DiamondRing : MonoBehaviour
     public float beatsShownInAdvance;
     public float beatOfThisNote;
     public float songPosInBeats;
-    public bool hit;
     public KeyCode keyCode;
-    public bool goodHit;
-    bool broadcast;
+    HitEvent currentNote;
 
     // Update is called once per frame
     void Update()
     {
-        if(!broadcast)
+        double _localCurrentOffset = GameManager.Instance.timer * 1000f;
+        if (ScoreManager.Instance.InHitWindow(currentNote, _localCurrentOffset))
         {
-            //Debug.Log("Expected " + keyCode);
-            broadcast = true;
+            if (Input.GetKeyDown(keyCode))
+            {
+                ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.GetHitScore(currentNote, _localCurrentOffset), currentNote.getPlayMode() == 1 ? ScoreManager.Instance.MEMORYBASESCORE : ScoreManager.Instance.INVERTEDMEMORYBASESCORE);
+                Destroy(gameObject);
+            }
         }
-        if (hit && Input.GetKeyDown(keyCode))
+        else if (ScoreManager.Instance.MissedHitWindow(currentNote, _localCurrentOffset))
         {
-            Destroy(gameObject);
+            ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.MISS, currentNote.getPlayMode() == 1 ? ScoreManager.Instance.MEMORYBASESCORE : ScoreManager.Instance.INVERTEDMEMORYBASESCORE);
         }
     }
 
@@ -34,21 +36,11 @@ public class DiamondRing : MonoBehaviour
     {
         if (collision.tag == "normalDiamondHitbox")
         {
-            hit = true;
             gameObject.GetComponent<LineRenderer>().enabled = false;
         }
         else if (collision.tag == "despawnerDiamond")
         {
             Destroy(gameObject);
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.tag == "normalDiamondHitbox")
-        {
-            hit = false;
-            goodHit = false;
         }
     }
 
@@ -63,5 +55,13 @@ public class DiamondRing : MonoBehaviour
     {
         songPosInBeats = Convert.ToSingle(FindObjectOfType<GameManager>().timer *1000);
         transform.localScale = Vector3.Lerp(spawnScale, hitboxScale - (spawnScale-hitboxScale), (beatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / (beatsShownInAdvance*2));
+    }
+
+    public void Initialize(Vector3 hitboxScale, float beatOfThisNote, float beatsShownInAdvance, HitEvent currentNote)
+    {
+        this.hitboxScale = hitboxScale;
+        this.beatOfThisNote = beatOfThisNote;
+        this.beatsShownInAdvance = beatsShownInAdvance;
+        this.currentNote = currentNote;
     }
 }

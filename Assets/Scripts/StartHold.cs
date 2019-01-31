@@ -11,86 +11,132 @@ public class StartHold : MonoBehaviour
     public float beatsShownInAdvance;
     public float beatOfThisNote;
     public float songPosInBeats;
-
-    public bool hit;
     public KeyCode keyCode;
-    public bool goodHit;
 
     public GameObject midHold;
     public GameObject endHold;
-    public bool passed;
-    GameObject ring;
-    public GameObject fakeStartRing;
+    public bool passedStart;
+    bool finishedStart;
+    bool passedMid;
+    bool finishedEnd;
+    bool passedEnd;
     GameObject parentObject;
+    HitEvent currentNote;
+    double timeFrozen;
+    bool frozen;
 
     // Start is called before the first frame update
     void Start()
     {
-        passed = false;
+        passedStart = false;
+        finishedStart = false;
+        passedMid = true;
+        finishedEnd = false;
+        passedEnd = false;
+        frozen = false;
+        timeFrozen = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (hit && Input.GetKeyDown(keyCode))
+        double _localCurrentOffset = GameManager.Instance.timer * 1000f;
+        if (ScoreManager.Instance.InStartHoldHitWindow(currentNote, _localCurrentOffset) && !passedStart)
         {
-            gameObject.GetComponent<Image>().enabled = false;
-            passed = true;
-            CreateFake();
-        }
-    }
-
-    public void CreateFake()
-    {
-        fakeStartRing = Instantiate(ring, new Vector3(transform.position.x, hitboxPos.y, transform.position.z), transform.rotation);
-        fakeStartRing.transform.SetParent(parentObject.transform);
-        fakeStartRing.transform.localScale = ring.transform.localScale;
-        midHold.GetComponent<MidHold>().startRing = fakeStartRing;
-        midHold.GetComponent<MidHold>().realStartRing = gameObject;
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "goodHitbox")
-        {
-            goodHit = true;
-            hit = true;
-        }
-        if (collision.tag == "normalHitbox")
-        {
-            hit = true;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.tag == "goodHitbox")
-        {
-            goodHit = false;
-            hit = false;
-        }
-        if (collision.tag == "normalHitbox")
-        {
-            hit = false;
-            goodHit = false;
-            if (!passed)
+            if (Input.GetKeyDown(keyCode))
             {
-                //Debug.Log("START FAILED");
-                gameObject.GetComponent<Image>().color = Color.black;
-                midHold.GetComponent<Image>().color = Color.black;
-                endHold.GetComponent<Image>().color = Color.black;
+                ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.GetHitScore(currentNote, _localCurrentOffset), ScoreManager.Instance.STEPBASESCORE);
+                passedStart = true;
+                StartCoroutine(Freeze());
             }
         }
+        else if (ScoreManager.Instance.MissedHitWindow(currentNote, _localCurrentOffset) && !finishedStart)
+        {
+            if (!passedStart)
+            {
+                DisableHold();
+                ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.MISS, ScoreManager.Instance.STEPBASESCORE);
+            }
+            finishedStart = true;
+        }
+        if (finishedStart)
+        {
+            if (!(ScoreManager.Instance.InEndHitWindow(currentNote, _localCurrentOffset) || ScoreManager.Instance.MissedEndHitWindow(currentNote, _localCurrentOffset))) // Finished start, in the middle of the hold note
+            {
+                if (Input.GetKeyUp(keyCode) && passedMid && passedStart) // detects if key was released
+                {
+                    passedMid = false;
+                    UnFreeze();
+                    DisableHold();
+                    ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.MISS, ScoreManager.Instance.STEPBASESCORE);
+                }
+                else
+                {
+                    if (passedMid && passedStart)
+                        ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.GREAT, ScoreManager.Instance.STEPBASESCORE);
+                    else
+                    {
+                        ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.MISS, ScoreManager.Instance.STEPBASESCORE);
+                    }
+                }
+            }
+            if (ScoreManager.Instance.InEndHitWindow(currentNote, _localCurrentOffset) && passedStart && passedMid && !passedEnd) // Finished start and mid, at end note
+            {
+                gameObject.GetComponent<Image>().enabled = false;
+                if (Input.GetKeyUp(keyCode))
+                {
+                    ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.GREAT, ScoreManager.Instance.STEPBASESCORE);
+                    endHold.GetComponent<Image>().enabled = false;
+                    passedEnd = true;
+                }
+            }
+            else if (ScoreManager.Instance.MissedEndHitWindow(currentNote, _localCurrentOffset) && !finishedEnd)
+            {
+                if (!passedEnd)
+                {
+                    ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.MISS, ScoreManager.Instance.STEPBASESCORE);
+                    midHold.GetComponent<Image>().enabled = false;
+                    DisableHold();
+                }
+                finishedEnd = true;
+            }
+        }
+    }
+
+    IEnumerator Freeze() // Freeze the start of hold note on top of the drum
+    {
+        float delay = beatOfThisNote - songPosInBeats;
+        if (beatOfThisNote - songPosInBeats <= 0)
+            delay = 0;
+        yield return new WaitForSecondsRealtime(delay / 1000f);
+        frozen = true;
+        transform.position = Vector3.Lerp(spawnerPos, new Vector3(spawnerPos.x, hitboxPos.y - (spawnerPos.y - hitboxPos.y), spawnerPos.z), (beatsShownInAdvance) / (beatsShownInAdvance * 2));
+    }
+
+    void DisableHold() // Paint everything black
+    {
+        midHold.GetComponent<Image>().color = Color.black;
+        gameObject.GetComponent<Image>().color = Color.black;
+        endHold.GetComponent<Image>().color = Color.black;
+    }
+
+    void UnFreeze() // Resume linearly interpolating this note
+    {
+        timeFrozen = GameManager.Instance.timer * 1000f - beatOfThisNote;
+        frozen = false;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        songPosInBeats = Convert.ToSingle(FindObjectOfType<GameManager>().timer * 1000);
-        transform.position = Vector3.Lerp(spawnerPos, new Vector3(spawnerPos.x, hitboxPos.y - (spawnerPos.y - hitboxPos.y), spawnerPos.z), (beatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / (beatsShownInAdvance * 2));
+        if (!frozen)
+        {
+            songPosInBeats = Convert.ToSingle(FindObjectOfType<GameManager>().timer * 1000f - timeFrozen);
+            transform.position = Vector3.Lerp(spawnerPos, new Vector3(spawnerPos.x, hitboxPos.y - (spawnerPos.y - hitboxPos.y), spawnerPos.z), (beatsShownInAdvance - (beatOfThisNote - songPosInBeats)) / (beatsShownInAdvance * 2));
+        }
     }
 
-    public void Initialize(Vector3 spawner, Vector3 hitbox, int offset, float scrollDelay, KeyCode key, GameObject midHold, GameObject endHold, GameObject parentObject, GameObject ring)
+    public void Initialize(Vector3 spawner, Vector3 hitbox, int offset, float scrollDelay, KeyCode key, GameObject midHold, GameObject endHold, GameObject parentObject, HitEvent currentNote)
     {
         spawnerPos = spawner;
         hitboxPos = hitbox;
@@ -99,7 +145,7 @@ public class StartHold : MonoBehaviour
         keyCode = key;
         this.midHold = midHold;
         this.endHold = endHold;
-        this.ring = ring;
         this.parentObject = parentObject;
+        this.currentNote = currentNote;
     }
 }

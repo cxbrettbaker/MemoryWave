@@ -24,12 +24,12 @@ public class FlashManager : MonoBehaviour
     }
 
     // Changes the color of a GameObject briefly, then reverts it back after a delay
-    public void Flash(GameObject flashObject, Color initialColor, Color finalColor, float flashTime)
+    public void Flash(GameObject flashObject, Color initialColor, Color finalColor, float flashTime, float delayTime)
     {
         TurnOn(flashObject, initialColor, finalColor, flashTime);
 
         LeanTween.value(flashObject, finalColor, initialColor, flashTime)
-            .setDelay(flashTime)
+            .setDelay(delayTime)
             .setOnUpdate((Color color) =>
             {
                 flashObject.GetComponent<Image>().color = color;

@@ -24,6 +24,7 @@ public class HitEvent
 
     KeyCode keyCode;
     int playMode;
+    GameObject eventObject;
 
     /************************
      * getters
@@ -107,6 +108,11 @@ public class HitEvent
     public int getPlayMode()
     {
         return playMode;
+    }
+
+    public GameObject getEventObject()
+    {
+        return eventObject;
     }
 
     /************************
@@ -213,4 +219,8 @@ public class HitEvent
         this.playMode = playMode;
     }
 
+    public void linkGameObject(GameObject eventObject)
+    {
+        this.eventObject = eventObject;
+    }
 }

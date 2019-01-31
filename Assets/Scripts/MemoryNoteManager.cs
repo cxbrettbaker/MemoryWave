@@ -72,29 +72,9 @@ public class MemoryNoteManager : MonoBehaviour
 	
 	// Call to show a BLEEP. 
 	public void Bleep (int index, bool isBlack) {
-
-        LeanTween.value(gameButtons[index], buttonSettings[index].normalColor, isBlack ? buttonSettings[4].highlightColor : buttonSettings[index].highlightColor, GameManager.Instance.scrollDelay / 10000f)
-            .setOnUpdate((Color color) =>
-            {
-                gameButtons[index].GetComponent<Image>().color = color;
-            });
-
-        LeanTween.value(gameButtons[index], isBlack ? buttonSettings[4].highlightColor : buttonSettings[index].highlightColor, buttonSettings[index].normalColor, GameManager.Instance.scrollDelay / 10000f)
-            .setDelay(GameManager.Instance.scrollDelay / 4000f)
-            .setOnUpdate((Color color) =>
-            {
-                gameButtons[index].GetComponent<Image>().color = color;
-            });
-
-        PlayAudio(index);
-        
+        FlashManager.Instance.Flash(gameButtons[index], buttonSettings[index].normalColor, isBlack ? buttonSettings[4].highlightColor : buttonSettings[index].highlightColor, GameManager.Instance.scrollDelay/10000f, GameManager.Instance.scrollDelay/4000f);
+        PlayAudio(index);     
 	}
-	
-	// Store the given color into the list of bleeps to be pressed. 
-	public void StoreBleep(int index, bool isBlack) {
-		Bleep(index, isBlack);
-    }
-
 
     public void SignalNewSequence()
     {
