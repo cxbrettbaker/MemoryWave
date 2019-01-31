@@ -26,7 +26,6 @@ public class Ring : MonoBehaviour
     {
         if (hit && Input.GetKeyDown(keyCode))
         {
-            GameManager.Instance.NoteHit(goodHit);
             gameObject.SetActive(false);
             Destroy(gameObject);
         }
@@ -60,7 +59,6 @@ public class Ring : MonoBehaviour
         {
             hit = false;
             goodHit = false;
-            GameManager.Instance.NoteMissed();
         }
     }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MemoryManager : MonoBehaviour
+public class MemoryNoteManager : MonoBehaviour
 {
 	public GameObject gameButtonPrefab;
 
@@ -11,7 +11,7 @@ public class MemoryManager : MonoBehaviour
 
     public Transform gameFieldPanelTransform;
 
-    public static MemoryManager Instance;
+    public static MemoryNoteManager Instance;
 
     public GameObject redButton;
 	public GameObject blueButton;
@@ -105,27 +105,29 @@ public class MemoryManager : MonoBehaviour
 
     public void NoteHit()
     {
-        GameManager.Instance.NoteHit(true);
+        //GameManager.Instance.NoteHit(true);
         sequenceHitCount++;
         if(sequenceHitCount >= sequenceSize)
         {
-            Success();
+            SequenceSuccess();
         }
     }
 
     public void NoteMissed()
     {
-        GameManager.Instance.NoteMissed();
-        Missed();
+        //GameManager.Instance.NoteMissed();
+        SequenceMissed();
     }
 
-    void Success() {
+    void SequenceSuccess()
+    {
         // handle success
         Debug.Log("FULL SEQUENCE HIT");
 	}
 	
-	void Missed() {
-		inputEnabled = false;
+	void SequenceMissed()
+    {
+
 	}
 	
 }

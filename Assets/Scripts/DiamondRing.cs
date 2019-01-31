@@ -26,9 +26,7 @@ public class DiamondRing : MonoBehaviour
         }
         if (hit && Input.GetKeyDown(keyCode))
         {
-            MemoryManager.Instance.NoteHit();
             Destroy(gameObject);
-            Debug.Log("hit " + keyCode);
         }
     }
 
@@ -37,7 +35,7 @@ public class DiamondRing : MonoBehaviour
         if (collision.tag == "normalDiamondHitbox")
         {
             hit = true;
-            //gameObject.GetComponent<LineRenderer>().enabled = false;
+            gameObject.GetComponent<LineRenderer>().enabled = false;
         }
         else if (collision.tag == "despawnerDiamond")
         {
@@ -51,7 +49,6 @@ public class DiamondRing : MonoBehaviour
         {
             hit = false;
             goodHit = false;
-            MemoryManager.Instance.NoteMissed();
         }
     }
 

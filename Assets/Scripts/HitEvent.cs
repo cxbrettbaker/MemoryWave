@@ -22,6 +22,9 @@ public class HitEvent
     private bool isHold;
     private bool flashBlack;
 
+    KeyCode keyCode;
+    int playMode;
+
     /************************
      * getters
      ***********************/
@@ -94,6 +97,16 @@ public class HitEvent
     public int[] getColorIntArray()
     {
         return colorIntArray;
+    }
+
+    public KeyCode getkeyCode()
+    {
+        return keyCode;
+    }
+
+    public int getPlayMode()
+    {
+        return playMode;
     }
 
     /************************
@@ -188,6 +201,16 @@ public class HitEvent
     public void setSequenceStart(bool input)
     {
         sequenceStart = input;
+    }
+
+    public void setkeyCode(KeyCode keyCode)
+    {
+        this.keyCode = keyCode;
+    }
+
+    public void setPlayMode(int playMode)
+    {
+        this.playMode = playMode;
     }
 
 }

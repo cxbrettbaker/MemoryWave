@@ -20,7 +20,6 @@ public class Mine : MonoBehaviour
     {
         if (hit && Input.GetKeyDown(keyCode))
         {
-            GameManager.Instance.NoteMissed();
             gameObject.SetActive(false);
             Destroy(gameObject);
         }
@@ -54,7 +53,6 @@ public class Mine : MonoBehaviour
         {
             hit = false;
             goodHit = false;
-            GameManager.Instance.NoteHit(true);
         }
     }
 

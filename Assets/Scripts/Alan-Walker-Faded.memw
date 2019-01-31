@@ -1,12 +1,17 @@
 TODO:
 
 Change from collision based detection to timing based.
-Visualizer
 Score implementation (star hitmarker - blue 50,  green 100, yellow 300 (glow effect))
-Brief song volume fade out on combo break - loud miss sound
+Visualizer
+Brief song	 volume fade out on combo break - loud miss sound
 HP implementation
-Memory prompts need to scale with scrollDelay
-
+Memory prompts might need to scale with something other than scrollDelay
+Change the sprites of the step notes to look more like sound waves? Still not sure what would look good here
 Particle clouds in the background that change color in time with the BPM, color derived from something like ColorChord.
 
 
+Unity seems to update AudioSettings.dspTime every 50 ms.
+
+KNOWN BUGS: 
+mashing on hold notes sometimes causes a huge black ring to flash on the screen for a second.
+fake startrings seem to have clipping issues on only the third drum

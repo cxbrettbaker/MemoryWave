@@ -36,8 +36,7 @@ public class GameManager : MonoBehaviour
 
     public int numNormalHit;
     public int numGoodHit;
-
-    public Texture whiteTexture;
+    
     public int timeBuffer; // time in miliseconds before song starts
     public AudioClip audioClip;
 
@@ -129,28 +128,6 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void NoteHit(bool goodHit)
-    {
-
-        //Debug.Log("note hit AAYYYYYYYYYYYYYYYYYYYYYY");
-        //Debug.Log(string.Format("good hit: {0}", goodHit));
-        if (goodHit)
-        {
-            numGoodHit++;
-        } else
-        {
-            numNormalHit++;
-        }
-        score += baseScore;
-    }
-
-    public void NoteMissed()
-    {
-        //Debug.Log("note missed :(");
-        score -= baseScore;
-    }
-
-
     void Update() {
 
         if (startTime == 0)
@@ -162,7 +139,7 @@ public class GameManager : MonoBehaviour
         FetchCurrentNote();
         
         timer = AudioSettings.dspTime - startTime;
-        if ((timer + timeBuffer / 1000) >= songLength)
+        if ((timer + timeBuffer / 1000) >= songLength) // Song done
         {
             SceneManager.LoadScene("RankingPanel");
         }
@@ -185,17 +162,11 @@ public class GameManager : MonoBehaviour
                     memoryMode = false;
                     invertedMemoryMode = false;
                 }
-                else if (timingPointsList[timingIndex].getPlaymode() == 1) // memory
+                else
                 {
                     baseScore = memoryBaseScore;
-                    memoryMode = true;
-                    invertedMemoryMode = false;
-                }
-                else if (timingPointsList[timingIndex].getPlaymode() == -1) // inverted memory
-                {
-                    baseScore = memoryBaseScore;
-                    memoryMode = false;
-                    invertedMemoryMode = true;
+                    memoryMode = timingPointsList[timingIndex].getPlaymode() == 1 ? true : false;
+                    invertedMemoryMode = timingPointsList[timingIndex].getPlaymode() == -1 ? true : false;
                 }
                 timingIndex++;
             }
@@ -297,117 +268,49 @@ public class GameManager : MonoBehaviour
         // Create memory sequence
         if (memorySequence.Count > 0)
         {
-            MemoryManager.Instance.currentMemorySequence.Enqueue(memorySequence.Dequeue());
+            MemoryNoteManager.Instance.currentMemorySequence.Enqueue(memorySequence.Dequeue());
             if (memorySequence.Count > 0)
             {
                 while (memorySequence.Count > 0 && !memorySequence.Peek().isSequenceStart())
                 {
-                    MemoryManager.Instance.currentMemorySequence.Enqueue(memorySequence.Dequeue());
+                    MemoryNoteManager.Instance.currentMemorySequence.Enqueue(memorySequence.Dequeue());
                 }
                 // Handle inverted memory sequence
                 if (playMode == -1)
                 {
-                    Queue<HitEvent> reversedQueue = new Queue<HitEvent>(MemoryManager.Instance.currentMemorySequence.Reverse());
-                    MemoryManager.Instance.currentMemorySequence = reversedQueue;
+                    Queue<HitEvent> reversedQueue = new Queue<HitEvent>(MemoryNoteManager.Instance.currentMemorySequence.Reverse());
+                    MemoryNoteManager.Instance.currentMemorySequence = reversedQueue;
                 }
-                MemoryManager.Instance.SignalNewSequence();
+                MemoryNoteManager.Instance.SignalNewSequence();
             }
         }
 
         yield return new WaitForSecondsRealtime(scrollDelay / 2000f); // half of scrollDelay
-
-        // Handle memory prompt
-        if (playMode == 1)
-        {
-            LeanTween.value(memoryFlash, Color.clear, Color.white, scrollDelay / 8000f) // eighth of scrollDelay
-                .setOnUpdate((Color color) =>
-                {
-                    memoryFlash.GetComponent<Image>().color = color;
-                });
-
-            LeanTween.value(memoryFlash, Color.white, Color.clear, scrollDelay / 8000f)
-                .setDelay(scrollDelay / 8000f)
-                .setOnUpdate((Color color) =>
-                {
-                    memoryFlash.GetComponent<Image>().color = color;
-                });
-        }
-
-        // Handle inverted memory prompt
-        else if (playMode == -1)
-        {
-            LeanTween.value(invertedMemoryFlash, Color.clear, Color.white, scrollDelay / 8000f)
-                .setOnUpdate((Color color) =>
-                {
-                    invertedMemoryFlash.GetComponent<Image>().color = color;
-                });
-
-            LeanTween.value(invertedMemoryFlash, Color.white, Color.clear, scrollDelay / 8000f)
-                .setDelay(scrollDelay / 8000f)
-                .setOnUpdate((Color color) =>
-                {
-                    invertedMemoryFlash.GetComponent<Image>().color = color;
-                });
-        }
-
-       
+        FlashManager.Instance.Flash(playMode == 1 ? memoryFlash : invertedMemoryFlash, Color.clear, Color.white, scrollDelay/8000f); // eighth of scrollDelay       
     }
 
     IEnumerator HandleMemorySprites(HitEvent nextHitObject, int playMode)
     {
+
         if (nextHitObject.getColorArray().Length == 4) // Next hit event contains colorArray information
         {
             colorArray = nextHitObject.getColorArray();
         }
+
+        yield return new WaitForSecondsRealtime(scrollDelay / 4000f);
         if ((playMode == 1 || playMode == -1) && nextHitObject.IsNote()) // Memory or inverted memory note, draw sprites
         {
-            LeanTween.value(spriteLeftBig, spriteLeftBig.GetComponent<Image>().color, colorArray[0], scrollDelay / 20000f) // 1/20th of scrollDelay
-                .setOnUpdate((Color color) =>
-                {
-                    spriteLeftBig.GetComponent<Image>().color = color;
-                });
-            LeanTween.value(spriteLeftSmall, spriteLeftSmall.GetComponent<Image>().color, colorArray[1], scrollDelay / 20000f)
-                .setOnUpdate((Color color) =>
-                {
-                    spriteLeftSmall.GetComponent<Image>().color = color;
-                });
-            LeanTween.value(spriteRightSmall, spriteRightSmall.GetComponent<Image>().color, colorArray[2], scrollDelay / 20000f)
-                .setOnUpdate((Color color) =>
-                {
-                    spriteRightSmall.GetComponent<Image>().color = color;
-                });
-            LeanTween.value(spriteRightBig, spriteRightBig.GetComponent<Image>().color, colorArray[3], scrollDelay / 20000f)
-                .setOnUpdate((Color color) =>
-                {
-                    spriteRightBig.GetComponent<Image>().color = color;
-                });
+            FlashManager.Instance.TurnOn(spriteLeftBig, spriteLeftBig.GetComponent<Image>().color, colorArray[0], scrollDelay / 20000f);        // 1/20th of scrollDelay
+            FlashManager.Instance.TurnOn(spriteLeftSmall, spriteLeftSmall.GetComponent<Image>().color, colorArray[1], scrollDelay / 20000f);
+            FlashManager.Instance.TurnOn(spriteRightSmall, spriteRightSmall.GetComponent<Image>().color, colorArray[2], scrollDelay / 20000f);
+            FlashManager.Instance.TurnOn(spriteRightBig, spriteRightBig.GetComponent<Image>().color, colorArray[3], scrollDelay / 20000f);
         }
         else if (playMode == 0) // Step note, clear sprites
         {
-            LeanTween.value(spriteLeftBig, spriteLeftBig.GetComponent<Image>().color, Color.clear, scrollDelay / 10000f) // 1/10th of scrollDelay
-                .setDelay(scrollDelay / 10000f)
-                .setOnUpdate((Color color) =>
-                {
-                    spriteLeftBig.GetComponent<Image>().color = color;
-                });
-            LeanTween.value(spriteLeftSmall, spriteLeftSmall.GetComponent<Image>().color, Color.clear, scrollDelay / 10000f)
-                .setDelay(scrollDelay / 10000f)
-                .setOnUpdate((Color color) =>
-                {
-                    spriteLeftSmall.GetComponent<Image>().color = color;
-                });
-            LeanTween.value(spriteRightSmall, spriteRightSmall.GetComponent<Image>().color, Color.clear, scrollDelay / 10000f)
-                .setDelay(scrollDelay / 10000f)
-                .setOnUpdate((Color color) =>
-                {
-                    spriteRightSmall.GetComponent<Image>().color = color;
-                });
-            LeanTween.value(spriteRightBig, spriteRightBig.GetComponent<Image>().color, Color.clear, scrollDelay / 10000f)
-                .setDelay(scrollDelay / 10000f)
-                .setOnUpdate((Color color) =>
-                {
-                    spriteRightBig.GetComponent<Image>().color = color;
-                });
+            FlashManager.Instance.TurnOn(spriteLeftBig, spriteLeftBig.GetComponent<Image>().color, Color.clear, scrollDelay / 10000f);        // 1/10th of scrollDelay
+            FlashManager.Instance.TurnOn(spriteLeftSmall, spriteLeftSmall.GetComponent<Image>().color, Color.clear, scrollDelay / 10000f);
+            FlashManager.Instance.TurnOn(spriteRightSmall, spriteRightSmall.GetComponent<Image>().color, Color.clear, scrollDelay / 10000f);
+            FlashManager.Instance.TurnOn(spriteRightBig, spriteRightBig.GetComponent<Image>().color, Color.clear, scrollDelay / 10000f);
         }
         yield return null;
     }
@@ -418,16 +321,16 @@ public class GameManager : MonoBehaviour
         switch(color)
         {
             case "red":
-                MemoryManager.Instance.StoreBleep(0, isBlack);
+                MemoryNoteManager.Instance.StoreBleep(0, isBlack);
                 break;
             case "blue":
-                MemoryManager.Instance.StoreBleep(1, isBlack);
+                MemoryNoteManager.Instance.StoreBleep(1, isBlack);
                 break;
             case "yellow":
-                MemoryManager.Instance.StoreBleep(2, isBlack);
+                MemoryNoteManager.Instance.StoreBleep(2, isBlack);
                 break;
             case "green":
-                MemoryManager.Instance.StoreBleep(3, isBlack);
+                MemoryNoteManager.Instance.StoreBleep(3, isBlack);
                 break;
         }
     }
@@ -478,9 +381,9 @@ public class GameManager : MonoBehaviour
 
     void spawnMemoryNote(GameObject ring, Transform spawner, HitEvent hitObject, KeyCode key)
     {
-        if (MemoryManager.Instance.currentMemorySequence.Count > 0)
+        if (MemoryNoteManager.Instance.currentMemorySequence.Count > 0)
         {
-            HitEvent memNote = MemoryManager.Instance.currentMemorySequence.Dequeue();
+            HitEvent memNote = MemoryNoteManager.Instance.currentMemorySequence.Dequeue();
             var currentRing = Instantiate(ring, spawner.localPosition, Quaternion.identity);
             currentRing.transform.SetParent(parentDiamond.transform, false);
             currentRing.GetComponent<DiamondRing>().hitboxScale = hitboxDiamond.transform.localScale;
