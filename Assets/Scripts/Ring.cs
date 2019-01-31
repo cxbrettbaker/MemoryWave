@@ -13,6 +13,7 @@ public class Ring : MonoBehaviour
 
     public KeyCode keyCode;
     HitEvent currentNote;
+    bool finished = false;
 
     // Update is called once per frame
     void Update()
@@ -26,8 +27,9 @@ public class Ring : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        else if (ScoreManager.Instance.MissedHitWindow(currentNote, _localCurrentOffset))
+        else if (ScoreManager.Instance.MissedHitWindow(currentNote, _localCurrentOffset) && !finished)
         {
+            finished = true;
             ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.MISS, ScoreManager.Instance.STEPBASESCORE);
         }
     }

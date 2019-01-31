@@ -1,6 +1,5 @@
 TODO:
 
-Change from collision based detection to timing based.
 Score implementation (star hitmarker - blue 50,  green 100, yellow 300 (glow effect))
 Visualizer
 Brief song	 volume fade out on combo break - loud miss sound

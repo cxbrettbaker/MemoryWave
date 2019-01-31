@@ -9,15 +9,25 @@ public class ScoreManager : MonoBehaviour
     public int OK     = 50;
     public int MISS    = 0;
     public int STEPBASESCORE            = 1;
-    public int MEMORYBASESCORE         = 10;
-    public int INVERTEDMEMORYBASESCORE = 20;
+    public int MEMORYBASESCORE          = 5;
+    public int INVERTEDMEMORYBASESCORE = 10;
 
     public static ScoreManager Instance;
     double greatHitWindow;
     double goodHitWindow;
     double okHitWindow;
     int overallDifficulty;
+    public GameObject hitIndicator;
 
+    int maxGreat;
+    int numGreat;
+    int numGood;
+    int numOK;
+    int numMiss;
+    int score;
+    float accuracy;
+    int maxCombo;
+    int combo;
 
     // Start is called before the first frame update
     void Start()
@@ -25,6 +35,17 @@ public class ScoreManager : MonoBehaviour
         Instance = this;
         overallDifficulty = 0;
         SetOverallDifficulty();
+
+        maxGreat = 0;
+        numGreat = 0;
+        numGood = 0;
+        numOK = 0;
+        numMiss = 0;
+        score = 0;
+        accuracy = 0f;
+        maxCombo = 0;
+        combo = 0;
+
     }
 
     public void SetOverallDifficulty()
@@ -102,10 +123,33 @@ public class ScoreManager : MonoBehaviour
             return MISS;
     }
 
-    public void ScoreNote(HitEvent note, int hitScore, int baseScore)
+    public void ScoreNote(HitEvent note, int hitScore, int baseScoreMultiplier)
     {
-
+        Color flashColor;
+        if(hitScore == GREAT)
+        {
+            flashColor = Color.yellow;
+        }
+        else if(hitScore == GOOD)
+        {
+            flashColor = Color.green;
+        }
+        else if(hitScore == OK)
+        {
+            flashColor = Color.blue;
+        }
+        else
+        {
+            flashColor = Color.red;
+        }
+        FlashManager.Instance.Flash(hitIndicator, Color.clear, flashColor, GameManager.Instance.scrollDelay / 20000f, GameManager.Instance.scrollDelay / 20000f);
+        score += hitScore * baseScoreMultiplier;
+        maxGreat++;
     }
 
+    float CalculateAccuracy()
+    {
+        return (numGreat / maxGreat);
+    }
 
 }

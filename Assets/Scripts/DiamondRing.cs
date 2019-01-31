@@ -13,6 +13,7 @@ public class DiamondRing : MonoBehaviour
     public float songPosInBeats;
     public KeyCode keyCode;
     HitEvent currentNote;
+    bool finished;
 
     // Update is called once per frame
     void Update()
@@ -23,12 +24,15 @@ public class DiamondRing : MonoBehaviour
             if (Input.GetKeyDown(keyCode))
             {
                 ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.GetHitScore(currentNote, _localCurrentOffset), currentNote.getPlayMode() == 1 ? ScoreManager.Instance.MEMORYBASESCORE : ScoreManager.Instance.INVERTEDMEMORYBASESCORE);
+                MemoryNoteManager.Instance.NoteHit();
                 Destroy(gameObject);
             }
         }
-        else if (ScoreManager.Instance.MissedHitWindow(currentNote, _localCurrentOffset))
+        else if (ScoreManager.Instance.MissedHitWindow(currentNote, _localCurrentOffset) && !finished)
         {
+            MemoryNoteManager.Instance.NoteMissed();
             ScoreManager.Instance.ScoreNote(currentNote, ScoreManager.Instance.MISS, currentNote.getPlayMode() == 1 ? ScoreManager.Instance.MEMORYBASESCORE : ScoreManager.Instance.INVERTEDMEMORYBASESCORE);
+            finished = true;
         }
     }
 
@@ -48,6 +52,7 @@ public class DiamondRing : MonoBehaviour
     {
         spawnScale = new Vector3(9.061569f, 9.635226f, 0f);
         transform.localScale = spawnScale;
+        finished = false;
     }
 
     // Update is called once per frame

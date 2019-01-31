@@ -82,10 +82,8 @@ public class MemoryNoteManager : MonoBehaviour
         sequenceHitCount = 0;
     }
 
-
     public void NoteHit()
     {
-        //GameManager.Instance.NoteHit(true);
         sequenceHitCount++;
         if(sequenceHitCount >= sequenceSize)
         {
@@ -95,19 +93,17 @@ public class MemoryNoteManager : MonoBehaviour
 
     public void NoteMissed()
     {
-        //GameManager.Instance.NoteMissed();
         SequenceMissed();
     }
 
     void SequenceSuccess()
     {
-        // handle success
         Debug.Log("FULL SEQUENCE HIT");
 	}
 	
 	void SequenceMissed()
     {
-
+        Debug.Log("SEQUENCE FAILED");
 	}
 	
 }
